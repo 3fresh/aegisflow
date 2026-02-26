@@ -2,210 +2,211 @@
 
 **Transform, Validate, Deliver from a Single TOC**
 
-## 📋 概述
+## 📋 Overview
 
-`fill_tlf_status.py` 是一个自动化工具，用于将TFL Status文件中的Comparison Status数据合并到People Management文件的QC Status列中。
+`fill_tlf_status.py` is an automation tool designed to merge Comparison Status data from TLF Status files into the QC Status column of People Management files.
 
-## 🎯 功能特性
+## 🎯 Key Features
 
-### 核心功能
+### Core Features
 
-1. **文件选择**
-   - 选择已修改的people_management.xlsx文件
-   - 选择tfl_status.xlsx文件
+1. **File Selection**
+   - Select modified people_management.xlsx file
+   - Select tfl_status.xlsx file
 
-2. **状态预处理**
-   - 自动将"Match"转换为"Pass"
-   - 自动将"Mismatch"转换为"Fail"
+2. **Status Preprocessing**
+   - Automatically convert "Match" to "Pass"
+   - Automatically convert "Mismatch" to "Fail"
 
-3. **精确匹配合并**
-   - 基于`Dataset`（tfl_status）和`Output Name`（people_management）进行精确匹配
-   - 仅在完全匹配时才合并数据
-   - 未匹配的行QC Status列置空
+3. **Precise Matching and Merging**
+   - Perform exact matching based on `Dataset` (tfl_status) and `Output Name` (people_management)
+   - Only merge data when exact matches are found
+   - Leave QC Status column empty for unmatched rows
 
-4. **结构保留**
-   - 保留people_management中的所有sheet
-   - 保留所有原有列
-   - 仅更新QC Status列，其他列不做任何改动
+4. **Structure Preservation**
+   - Retain all sheets in people_management
+   - Preserve all original columns
+   - Update only the QC Status column; leave all other columns unchanged
 
-5. **统计报告**
-   - TLF总数目
-   - Status为"Pass"的数目
-   - Status为"Fail"的数目
-   - Status为空的数目
-   - 匹配率百分比
+5. **Statistical Report**
+   - Total number of TLFs
+   - Number of Status "Pass"
+   - Number of Status "Fail"
+   - Number of empty Status values
+   - Matching rate percentage
 
-## 📁 文件结构
+## 📁 File Structure
 
-### 输入文件
+### Input Files
 
 1. **people_management.xlsx**
-   - 必需sheet: `TLF`
-   - 必需列: `Output Name`
-   - 目标列: `QC Status (Not Started, Ongoing, QC Pending, Fail, Pass)`
+   - Required sheet: `TLF`
+   - Required column: `Output Name`
+   - Target column: `QC Status (Not Started, Ongoing, QC Pending, Fail, Pass)`
 
 2. **tfl_status.xlsx**
-   - 必需sheet: `Overview`
-   - 必需列: `Dataset`, `Comparison Status`
+   - Required sheet: `Overview`
+   - Required columns: `Dataset`, `Comparison Status`
 
-### 输出文件
+### Output Files
 
-- 默认文件名: `people_management_with_status.xlsx`
-- 用户可自定义文件名和保存路径
+- Default filename: `people_management_with_status.xlsx`
+- Users can customize the filename and save path
 
-## 🚀 使用方法
+## 🚀 Usage
 
-### 方法1：使用批处理文件（推荐）
+### Method 1: Using Batch File (Recommended)
 
 ```bash
 run_fill_tlf_status.bat
 ```
 
-### 方法2：直接运行Python脚本
+### Method 2: Run Python Script Directly
 
 ```bash
 py -3.13 fill_tlf_status.py
 ```
 
-## 📊 工作流程
+## 📊 Workflow
 
 ```
-输入1: people_management.xlsx (TLF sheet)
-输入2: tfl_status.xlsx (Overview sheet)
+Input 1: people_management.xlsx (TLF sheet)
+Input 2: tfl_status.xlsx (Overview sheet)
     ↓
-[Step 1] 读取people_management文件
-[Step 2] 读取tfl_status文件
-[Step 3] 预处理Comparison Status
+[Step 1] Read people_management file
+[Step 2] Read tfl_status file
+[Step 3] Preprocess Comparison Status
          - Match → Pass
          - Mismatch → Fail
     ↓
-[Step 4] 基于Dataset和Output Name精确匹配
-         - 匹配成功：填充QC Status
-         - 匹配失败：QC Status置空
+[Step 4] Perform exact matching based on Dataset and Output Name
+         - Match successful: Populate QC Status
+         - Match failed: Set QC Status to empty
     ↓
-[Step 5] 更新Excel文件（仅QC Status列）
-[Step 6] 用户选择输出路径和文件名
+[Step 5] Update Excel file (QC Status column only)
+[Step 6] User selects output path and filename
     ↓
-输出: people_management_with_status.xlsx
-统计: 总数/Pass数/Fail数/空值数/匹配率
+Output: people_management_with_status.xlsx
+Statistics: Total/Pass count/Fail count/Empty count/Match rate
 ```
 
-## 📝 列映射说明
+## 📝 Column Mapping
 
-| 源文件 | 源列 | 目标文件 | 目标列 | 操作 |
-|--------|------|----------|--------|------|
-| tfl_status.xlsx | Dataset | people_management.xlsx | Output Name | 匹配键 |
-| tfl_status.xlsx | Comparison Status | people_management.xlsx | QC Status | 合并值（预处理后） |
+| Source File | Source Column | Target File | Target Column | Operation |
+|-------------|---------------|-------------|---------------|-----------|
+| tfl_status.xlsx | Dataset | people_management.xlsx | Output Name | Matching key |
+| tfl_status.xlsx | Comparison Status | people_management.xlsx | QC Status | Merged value (post-processing) |
 
-### 值转换规则
+### Value Conversion Rules
 
-| 原始值（tfl_status） | 转换后值（people_management） |
-|---------------------|-------------------------------|
+| Original Value (tfl_status) | Converted Value (people_management) |
+|-----------------------------|-------------------------------------|
 | Match | Pass |
 | Mismatch | Fail |
-| (其他值) | (保持原样) |
+| (Other values) | (Keep as is) |
 
-## ⚠️ 注意事项
+## ⚠️ Important Notes
 
-### 文件要求
+### File Requirements
 
 1. **people_management.xlsx**
-   - 必须包含`TLF` sheet
-   - `TLF` sheet的第1行为标题，第2行为列名
-   - 必须包含`Output Name`列
-   - 如果不存在`QC Status (Not Started, Ongoing, QC Pending, Fail, Pass)`列，脚本会自动创建
+   - Must contain `TLF` sheet
+   - First row of TLF sheet is title, second row is column names
+   - Must contain `Output Name` column
+   - If `QC Status (Not Started, Ongoing, QC Pending, Fail, Pass)` column does not exist, the script will create it automatically
 
 2. **tfl_status.xlsx**
-   - 必须包含`Overview` sheet
-   - 必须包含`Dataset`和`Comparison Status`列
+   - Must contain `Overview` sheet
+   - Must contain `Dataset` and `Comparison Status` columns
 
-### 运行前检查
+### Pre-Execution Checklist
 
-- [ ] 确保Excel中没有打开输入文件
-- [ ] 确认文件路径正确
-- [ ] 确认Python 3.13可用（或已正确创建 `.venv`）
-- [ ] 确保有足够的磁盘空间
+- [ ] Ensure input files are not open in Excel
+- [ ] Confirm file paths are correct
+- [ ] Confirm Python 3.13 is available (or `.venv` is properly created)
+- [ ] Ensure sufficient disk space
 
-### 常见错误
+### Common Errors
 
-#### 错误1: Permission denied
+#### Error 1: Permission denied
 ```
-❌ 无法读取people_management文件（文件可能被Excel打开）
+❌ Unable to read people_management file (file may be open in Excel)
 ```
-**解决方案**: 关闭Excel中打开的文件，重新运行脚本
+**Solution**: Close the file in Excel and run the script again
 
-#### 错误2: Sheet not found
+#### Error 2: Sheet not found
 ```
-❌ 错误：people_management文件中未找到'TLF' sheet
+❌ Error: 'TLF' sheet not found in people_management file
 ```
-**解决方案**: 检查people_management.xlsx是否包含TLF sheet
+**Solution**: Verify that people_management.xlsx contains a TLF sheet
 
-#### 错误3: Column not found
+#### Error 3: Column not found
 ```
-❌ 错误：tfl_status文件的Overview sheet中未找到'Dataset'列
+❌ Error: 'Dataset' column not found in Overview sheet of tfl_status file
 ```
-**解决方案**: 检查tfl_status.xlsx的Overview sheet是否包含必需列
+**Solution**: Verify that tfl_status.xlsx Overview sheet contains the required columns
 
-## 📈 输出示例
+## 📈 Output Example
 
-运行成功后，会显示如下统计信息：
+After successful execution, the following statistics will be displayed:
 
 ```
 ================================================================================
-✓✓✓ 填充完成！
+✓✓✓ Fill Complete!
 ================================================================================
-输出文件: C:\path\to\people_management_with_status.xlsx
+Output file: C:\path\to\people_management_with_status.xlsx
 
-统计信息：
-  - TLF总数目: 249
-  - Status为'Pass'的数目: 230
-  - Status为'Fail'的数目: 15
-  - Status为空的数目: 4
-  - 匹配率: 245/249 (98.4%)
+Statistics:
+  - Total TLF count: 249
+  - Status 'Pass' count: 230
+  - Status 'Fail' count: 15
+  - Empty Status count: 4
+  - Match rate: 245/249 (98.4%)
 
-提示：可以直接打开Excel文件查看结果
-      所有其他列和sheet都已保留，未做任何改动
+Note: You can open the Excel file directly to view results
+      All other columns and sheets have been preserved without modification
 ```
 
-## 🔧 技术细节
+## 🔧 Technical Details
 
-### 文件锁定处理
+### File Locking Handling
 
-- 自动重试机制（3次，每次间隔1秒）
-- 友好的错误提示
+- Automatic retry mechanism (3 attempts, 1-second interval between attempts)
+- User-friendly error messages
 
-### 数据完整性
+### Data Integrity
 
-- 使用pandas进行数据读取和处理
-- 使用openpyxl保留Excel格式和结构
-- 仅更新目标列，其他数据完全保留
+- Use pandas for data reading and processing
+- Use openpyxl to preserve Excel format and structure
+- Update only the target column; all other data is fully preserved
 
-### 性能指标
+### Performance Metrics
 
-- 读取people_management: < 2秒
-- 读取tfl_status: < 1秒
-- 数据处理和合并: < 2秒
-- 文件保存: < 2秒
+- Read people_management: < 2 seconds
+- Read tfl_status: < 1 second
+- Data processing and merging: < 2 seconds
+- File save: < 2 seconds
 
-## 🆘 支持和维护
+## 🆘 Support and Maintenance
 
-如遇问题，请检查：
+If you encounter issues, please check:
 
-1. Python版本 ≥ 3.7
-   - 推荐: Python 3.13
-2. 依赖包已安装（pandas, openpyxl）
-3. 文件格式正确
-4. 文件未被其他程序打开
-5. 虚拟环境已激活
+1. Python version ≥ 3.7
+   - Recommended: Python 3.13
+2. Required packages are installed (pandas, openpyxl)
+3. File format is correct
+4. Files are not open in other programs
+5. Virtual environment is activated
 
-## 📚 相关文档
+## 📚 Related Documentation
 
-- [README.md](README.md) - 项目总览
-- [QUICK_START.md](QUICK_START.md) - 快速开始指南
-- [fill_tlf_template.py](fill_tlf_template.py) - TLF模板填充脚本
+- [README.md](README.md) - Project Overview
+- [QUICK_START.md](QUICK_START.md) - Quick Start Guide
+- [fill_tlf_template.py](fill_tlf_template.py) - TLF Template Fill Script
 
 ---
 
-**创建日期**: 2026年2月11日  
-**版本**: 1.0  
+**Created**: February 11, 2026  
+**Version**: 1.0  
+**Status**: ✅ Production Ready
 **状态**: ✅ 生产就绪
