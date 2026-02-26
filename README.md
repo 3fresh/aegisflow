@@ -1,8 +1,12 @@
-# TLF Template Filler Script - User Guide
+# AegisFlow
+
+**Transform, Validate, Deliver from a Single TOC**
 
 ## Overview
 
-This project contains five main Python scripts for automating clinical research data processing and report template filling:
+This project turns a single TOC-style source file into a full clinical output pipeline, including conversion, template filling, status merge, and XML delivery.
+
+The toolkit contains five main Python scripts:
 
 1. **mosaic_convert.py** - MOSAIC data conversion script (completed, ready to use)
 2. **extract_programs.py** - SAS program list extraction script (new, extracts program list from Excel)
