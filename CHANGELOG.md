@@ -1,5 +1,14 @@
 # Changelog
 
+## AegisFlow Branding Unification (2026-02-26)
+
+### 🎨 文档品牌统一
+
+- ✅ 仓库主品牌名称统一为 `AegisFlow`
+- ✅ 副标题统一为 `Transform, Validate, Deliver from a Single TOC`
+- ✅ 更新主页文档与模块指南标题，保持品牌一致性
+- ✅ 保持原有技术内容、流程说明与操作命令不变
+
 ## Python Runtime Migration (2026-02-24)
 
 ### 🔄 Python 3.13 迁移与启动修复
