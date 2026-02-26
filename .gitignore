@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+.venv/
+venv/
+
+# Tool/runtime artifacts
+.last_output.txt
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Generated outputs and temp data
+02_output/
+03_xml/
+04_pgm/
+archive/
+00_donotuse/
+
+# Large generated workbook example at project root
+Clinical Study Report_TiFo_MOSAIC_CONVERT.xlsx
