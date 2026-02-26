@@ -1,94 +1,94 @@
-# Excel 格式化指南 (v2.5)
+# Excel Formatting Guide (v2.5)
 
-## 📋 概览
+## 📋 Overview
 
-MOSAIC_CONVERT 输出的Excel文件现已包含完整的格式化和智能标记功能。本指南详细说明每种格式化的含义和应用场景。
+The Excel files output by MOSAIC_CONVERT now include comprehensive formatting and intelligent labeling functionality. This guide explains the meaning of each formatting style and its application scenarios.
 
-## 🎨 格式化类型
+## 🎨 Formatting Types
 
-### 1. 字体格式
+### 1. Font Formatting
 
-#### 全局字体：等线
-- **应用范围**：所有单元格
-- **目的**：统一外观，提高可读性
-- **功能**: 
-  - 表头：等线 + 加粗
-  - 数据：等线
-  - 富文本部分（内含红字时）：等线 + 红色
+#### Global Font: DengXian
+- **Applications**: All cells
+- **Purpose**: Uniform appearance and improved readability
+- **Features**:
+  - Headers: DengXian + Bold
+  - Data: DengXian
+  - Rich text sections (containing red text): DengXian + Red
 
-### 2. 背景颜色
+### 2. Background Colors
 
-#### 黄色背景 (FFFF00)
+#### Yellow Background (FFFF00)
 
-**应用于**：
-- H1:J1 (表头的3列)
-- 共享program+suffix的tocnumber/PROGRAM/SUFFIX列
+**Applied to**:
+- H1:J1 (3 header columns)
+- Tocnumber/PROGRAM/SUFFIX columns for shared program+suffix combinations
 
-**含义**：
-- 这些列需要特别关注
-- 某些表格共享相同的program+suffix组合（共31个组合）
-- 共66个tocnumber受到影响
+**Meaning**:
+- These columns require special attention
+- Certain tables share the same program+suffix combinations (31 shared combinations total)
+- 66 tocnumbers are affected
 
-**示例**：
-| Tocnumber | Program | Suffix | 说明 |
-|-----------|---------|--------|------|
-| 14.1.5.2 (黄) | t_dm (黄) | itt3l (黄) | 与14.1.5.3共享 |
-| 14.1.5.3 (黄) | t_dm (黄) | itt3l (黄) | 与14.1.5.2共享 |
-| 14.1.9.1 | t_dm | dischar_itt | 唯一 |
+**Example**:
+| Tocnumber | Program | Suffix | Description |
+|-----------|---------|--------|-------------|
+| 14.1.5.2 (Yellow) | t_dm (Yellow) | itt3l (Yellow) | Shared with 14.1.5.3 |
+| 14.1.5.3 (Yellow) | t_dm (Yellow) | itt3l (Yellow) | Shared with 14.1.5.2 |
+| 14.1.9.1 | t_dm | dischar_itt | Unique |
 
-#### 绿色背景 (92D050)
+#### Green Background (92D050)
 
-**应用于**：
-- 包含非latin1字符的单元格
+**Applied to**:
+- Cells containing non-Latin1 characters
 
-**含义**：
-- 此单元格包含字符编码问题
-- 问题字符已标红
-- 需要手动检查和修正
+**Meaning**:
+- This cell contains character encoding issues
+- Problematic characters are highlighted in red
+- Requires manual review and correction
 
-**示例**：
-- "Primary Endpoint – Progression" (绿色背景，"–"为红色)
-- 可能的字符问题：
-  - 破折号（–、—）
-  - 特殊符号（©、®、™）
-  - 非ASCII字符
+**Example**:
+- "Primary Endpoint - Progression" (green background, "-" in red)
+- Possible character issues:
+  - Dashes (--, --)
+  - Special symbols (C, R, TM)
+  - Non-ASCII characters
 
-### 3. 字体颜色
+### 3. Font Colors
 
-#### 红色字体
+#### Red Font
 
-**应用于**：
-- 非latin1字符（仅该字符）
+**Applied to**:
+- Non-Latin1 characters (individual character only)
 
-**含义**：
-- 标记编码问题的具体字符
-- 需要替换为等效的ASCII字符
+**Meaning**:
+- Marks specific characters with encoding issues
+- Need to be replaced with equivalent ASCII characters
 
-**替换建议**：
-| 问题字符 | 推荐替换 |
-|---------|--------|
-| – (en dash) | - (hyphen-minus) |
-| — (em dash) | - (hyphen-minus) |
+**Replacement Suggestions**:
+| Problem Character | Recommended Replacement |
+|-------------------|-------------------------|
+| - (en dash) | - (hyphen-minus) |
+| - (em dash) | - (hyphen-minus) |
 | ' (right single quote) | ' (apostrophe) |
 | " (left/right double quote) | " (quotation mark) |
 
-## 📊 排序方式
+## 📊 Sorting Method
 
-### 数值排序 (Numeric Sort)
+### Numeric Sort
 
-**排序规则**：
-1. 按"."分割tocnumber
-2. 将每部分转换为整数
-3. 递归比较，从左到右
+**Sorting Rules**:
+1. Split tocnumber by "."
+2. Convert each part to integer
+3. Compare recursively, left to right
 
-**示例序列**：
+**Example Sequence**:
 ```
 14.1.1
 14.1.2
 14.1.2.1
 14.1.2.2
 14.1.3
-14.1.10    ← 10在3之后（数值排序）
+14.1.10    <- 10 comes after 3 (numeric sort)
 14.1.10.1
 14.2
 14.2.1.1.1
@@ -97,108 +97,108 @@ MOSAIC_CONVERT 输出的Excel文件现已包含完整的格式化和智能标记
 ...
 ```
 
-**对比（字符排序 - 错误）**：
+**Comparison (Character Sort - Incorrect)**:
 ```
 14.1.1
-14.1.10    ← 字符排序会把10放在1之后
-14.1.2     ← 这是错误的！
+14.1.10    <- Character sort would place 10 before 2
+14.1.2     <- This is incorrect!
 14.1.3
 ```
 
-## 🔍 使用示例
+## 🔍 Usage Examples
 
-### 识别共享的表格
+### Identifying Shared Tables
 
-**场景**：10张表需要使用相同的program+suffix
-
-```
-1. 搜索所有黄色背景的行
-2. 查看同一program+suffix下的所有tocnumber
-3. 这些tocnumber共享结构
-
-示例 (program=t_dm, suffix=dischar_itt):
-- 14.1.9.1 (黄)
-- 14.1.9.2 (黄)
-- 14.1.9.3 (黄)
-```
-
-### 修复非latin1字符
-
-**场景**：发现单元格为绿色背景
+**Scenario**: 10 tables need to use the same program+suffix
 
 ```
-1. 定位绿色单元格
-2. 查看红色字符
-3. 根据上表进行替换
-4. 重新导入或手动修正
+1. Search for all yellow background rows
+2. View all tocnumbers under the same program+suffix
+3. These tocnumbers share structure
+
+Example (program=t_dm, suffix=dischar_itt):
+- 14.1.9.1 (Yellow)
+- 14.1.9.2 (Yellow)
+- 14.1.9.3 (Yellow)
 ```
 
-## 📝 数据统计
+### Correcting Non-Latin1 Characters
 
-### 当前数据
+**Scenario**: Found a cell with green background
 
-| 类型 | 数量 | 备注 |
-|------|------|------|
-| 总表格 | 249 | 基于seq序列转置 |
-| 原始行 | 3,211 | CSV格式 |
-| 共享组合 | 31 | program+suffix |
-| 受影响行 | 66 | 共享tocnumber |
-| 标红单元格 | 59 | 非latin1字符 |
+```
+1. Locate the green cell
+2. View the red character
+3. Perform replacement according to the table above
+4. Re-import or manually correct
+```
 
-### 常见的共享组合
+## 📝 Data Statistics
 
-| Program | Suffix | Tocnumber数量 | 示例 |
-|---------|--------|-------------|------|
+### Current Data
+
+| Type | Quantity | Notes |
+|------|----------|-------|
+| Total Tables | 249 | Based on seq sequence transpose |
+| Original Rows | 3,211 | CSV format |
+| Shared Combinations | 31 | program+suffix |
+| Affected Rows | 66 | Shared tocnumbers |
+| Red-marked Cells | 59 | Non-Latin1 characters |
+
+### Common Shared Combinations
+
+| Program | Suffix | Number of Tocnumbers | Example |
+|---------|--------|----------------------|---------|
 | t_dm | dischar_itt | 3 | 14.1.9.1-3 |
 | f_km | pfs_itt | 4 | 14.2.1.3.1-4 |
 | t_dm | itt3l | 2 | 14.1.5.2-3 |
 | t_cm | subct_itt3l | 2 | 14.1.18.2-3 |
 
-## 💡 最佳实践
+## 💡 Best Practices
 
-### 1. 快速浏览
-- 使用黄色背景快速定位需要特殊处理的行
-- 使用绿色背景快速定位编码问题
+### 1. Quick Review
+- Use yellow background to quickly locate rows requiring special handling
+- Use green background to quickly locate encoding issues
 
-### 2. 批量处理
-- 按照黄色标记进行分类
-- 按照program+suffix进行批量处理
+### 2. Batch Processing
+- Classify according to yellow markers
+- Process in batches by program+suffix
 
-### 3. 数据验证
-- 在绿色单元格处停顿，检查是否需要修正
-- 验证黄色标记行是否有缺失
+### 3. Data Validation
+- Pause at green cells to check if correction is needed
+- Verify that all yellow-marked rows are present and complete
 
-### 4. 排序验证
-- 检查tocnumber序列是否正确
-- 确保14.1.10在14.1.2之后
+### 4. Sort Verification
+- Check that tocnumber sequences are correct
+- Ensure 14.1.10 comes after 14.1.2
 
-## 🔧 技术细节
+## 🔧 Technical Details
 
-### 富文本实现
+### Rich Text Implementation
 
-使用openpyxl的RichText功能：
+Using openpyxl's RichText functionality:
 
 ```python
 from openpyxl.cell.rich_text import CellRichText, TextBlock
 from openpyxl.cell.text import InlineFont
 
-# 创建带有红色字体的特定字符
-red_font = InlineFont(rFont='等线', color='FF0000')
-default_font = InlineFont(rFont='等线')
+# Create specific characters with red font
+red_font = InlineFont(rFont='DengXian', color='FF0000')
+default_font = InlineFont(rFont='DengXian')
 
-# 组织成RichText
+# Organize into RichText
 rich_text = CellRichText(
     TextBlock(default_font, "Primary Endpoint "),
-    TextBlock(red_font, "–"),
+    TextBlock(red_font, "-"),
     TextBlock(default_font, " Progression")
 )
 ```
 
-### 排序实现
+### Sorting Implementation
 
 ```python
 def tocnumber_sort_key(tocnum):
-    """将tocnumber转换为可排序的元组"""
+    """Convert tocnumber to sortable tuple"""
     if pd.isna(tocnum):
         return (float('inf'),)
     parts = str(tocnum).split('.')
@@ -207,37 +207,37 @@ def tocnumber_sort_key(tocnum):
         for p in parts
     )
 
-# 应用排序
+# Apply sorting
 index_final['_sort_key'] = index_final['tocnumber'].apply(tocnumber_sort_key)
 index_final = index_final.sort_values('_sort_key')
 ```
 
-## ❓ 常见问题
+## FAQ
 
-### Q: 为什么有些表格被标记为黄色？
-**A**: 这表示它们与其他表格共享相同的program+suffix组合。这是数据的特点，不是错误。
+### Q: Why are some tables marked as yellow?
+**A**: This indicates they share the same program+suffix combination with other tables. This is a data characteristic, not an error.
 
-### Q: 非latin1字符可以自动转换吗？
-**A**: 不能。这些字符需要手动查看和修正。使用红色标记帮助识别。
+### Q: Can non-Latin1 characters be converted automatically?
+**A**: No. These characters require manual review and correction. Red markers help identify them.
 
-### Q: 排序规则是什么？
-**A**: 使用数值排序，不是字符排序。所以14.1.2在14.1.10之前。
+### Q: What is the sorting rule?
+**A**: Numeric sorting is used, not character sorting. Therefore, 14.1.2 comes before 14.1.10.
 
-### Q: 可以修改背景颜色吗？
-**A**: 可以。但建议保留这些标记以便快速识别数据特性。
+### Q: Can background colors be modified?
+**A**: Yes. However, we recommend keeping these markers for quick identification of data characteristics.
 
-### Q: 表头为什么也是黄色？
-**A**: H、I、J列表头都是黄色，提示这些列很重要且经常被标记。
+### Q: Why are the headers also yellow?
+**A**: Columns H, I, and J headers are yellow, indicating that these columns are important and frequently marked.
 
-## 📞 支持
+## Support
 
-如有格式化相关问题，请参考：
-- README_MOSAIC_CONVERT.md - 完整文档
-- UPDATE_SUMMARY.md - 功能总结
-- CHANGELOG.md - 版本历史
+For formatting-related questions, please refer to:
+- README_MOSAIC_CONVERT.md - Complete documentation
+- SELECT_ROWS.md - Feature summary
+- CHANGELOG.md - Version history
 
 ---
 
-**版本**: 2.5  
-**日期**: 2026-02-10  
-**最后更新**: 添加数值排序和富文本格式化
+**Version**: 2.5  
+**Date**: 2026-02-10  
+**Last Updated**: Added numeric sorting and rich text formatting
