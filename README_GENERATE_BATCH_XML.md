@@ -1,41 +1,42 @@
+```markdown
 # AegisFlow - Generate Batch XML
 
 **Transform, Validate, Deliver from a Single TOC**
 
-## 功能说明 / Overview
+## Feature Description / Overview
 
-根据Excel/CSV表格自动生成符合Adobe PDF Builder格式的batch list XML文件。
+Generate batch list XML files for Adobe PDF Builder from Excel/CSV input automatically that comply with Adobe PDF Builder format.
 
 Generate batch list XML files for Adobe PDF Builder from Excel/CSV input.
 
 ---
 
-## 主要功能 / Features
+## Main Features / Features
 
-1. ✅ 从Excel或CSV读取数据
-2. ✅ **图形化文件选择** - 无需手动输入路径，使用弹出窗口选择文件
-3. ✅ 自动按section分组和排序（支持正确的数字排序，如14.2.10排在14.2.2之后）
-4. ✅ 生成标准的XML结构（**完整保留**所有Adobe PDF Builder必需的元素）
-5. ✅ **保留UTF-8编码**和所有固定内容（ruleset、page、font等）
-6. ✅ 验证latin1字符兼容性并给出警告
-7. ✅ 支持自定义header、文件位置、输出路径
-8. ✅ 交互式用户界面，自动定位到相关文件夹
+1. ✅ Read data from Excel or CSV
+2. ✅ **Graphical File Selection** - No need to manually enter file paths, use popup window to select files
+3. ✅ Automatically group and sort by section (supports correct numeric sorting, e.g., 14.2.10 comes after 14.2.2)
+4. ✅ Generate standard XML structure (all Adobe PDF Builder required elements **fully retained**)
+5. ✅ **Preserve UTF-8 encoding** and all fixed content (ruleset, page, font, etc.)
+6. ✅ Verify latin1 character compatibility and provide warnings
+7. ✅ Support custom header, file location, output path
+8. ✅ Interactive user interface, automatically locates to related folders
 
-**详细说明**:
-- XML结构规则: [XML_STRUCTURE_RULES.md](XML_STRUCTURE_RULES.md)
-- 快速入门: [QUICK_START_GENERATE_XML.md](QUICK_START_GENERATE_XML.md)
+**Detailed Information**:
+- XML structure rules: [XML_STRUCTURE_RULES.md](XML_STRUCTURE_RULES.md)
+- Quick start: [QUICK_START_GENERATE_XML.md](QUICK_START_GENERATE_XML.md)
 
 ---
 
-## 使用方法 / Usage
+## Usage / Usage
 
-### 方法1: 双击批处理文件（推荐）
+### Method 1: Double-click batch file (Recommended)
 
-1. 双击 `run_generate_batch_xml.bat`
-2. 按提示输入信息
-3. 等待生成完成
+1. Double-click `run_generate_batch_xml.bat`
+2. Follow prompts to enter information
+3. Wait for generation to complete
 
-### 方法2: 命令行运行
+### Method 2: Run from command line
 
 ```bash
 python generate_batch_xml.py
@@ -43,33 +44,33 @@ python generate_batch_xml.py
 
 ---
 
-## 输入文件要求 / Input Requirements
+## Input File Requirements / Input Requirements
 
-### 必需的列 / Required Columns
+### Required Columns / Required Columns
 
-Excel/CSV文件必须包含以下列：
+Excel/CSV files must contain the following columns:
 
-| 列名 | 说明 | 示例 |
+| Column Name | Description | Example |
 |------|------|------|
-| `sect_num` | Section编号 | 14.1, 14.2.1, 14.2.10 |
-| `sect_ttl` | Section标题 | Study Population |
-| `OUTFILE` | 输出文件名（不含扩展名） | t_ds_comb |
-| `Output Type (Table, Listing, Figure)` | 输出类型 | Table, Figure, Listing |
-| `tocnumber` | TOC编号 | 14.1.1, 14.2.1.1 |
-| `Title` | 标题 | Disposition |
+| `sect_num` | Section number | 14.1, 14.2.1, 14.2.10 |
+| `sect_ttl` | Section title | Study Population |
+| `OUTFILE` | Output filename (without extension) | t_ds_comb |
+| `Output Type (Table, Listing, Figure)` | Output type | Table, Figure, Listing |
+| `tocnumber` | TOC number | 14.1.1, 14.2.1.1 |
+| `Title` | Title | Disposition |
 
-### 文件格式支持
+### File Format Support
 
-- ✅ Excel文件: `.xlsx`, `.xls`
-- ✅ CSV文件: `.csv` (支持多种编码: UTF-8, GBK, GB2312, latin1)
+- ✅ Excel files: `.xlsx`, `.xls`
+- ✅ CSV files: `.csv` (supports multiple encodings: UTF-8, GBK, GB2312, latin1)
 
 ---
 
-## 交互式输入说明 / Interactive Prompts
+## Interactive Input Prompts / Interactive Prompts
 
-运行工具后，会依次提示：
+After running the tool, you will be prompted sequentially:
 
-### 1. 选择输入文件
+### 1. Select Input File
 ```
 Step 1/6: Select Input File
 Please select Excel or CSV file in the popup window...
@@ -78,7 +79,7 @@ Please select Excel or CSV file in the popup window...
 - Default opens `02_output` directory
 - Supports filtering for .xlsx, .xls, .csv files
 
-### 2. Header文本 (Header Text)
+### 2. Header Text (Header Text)
 ```
 Step 2/6: Set Header Text
 This will be used for: <header text="..."> and <document-heading text="...">
@@ -88,7 +89,7 @@ Enter header text [Default: AZD0901 CSR DR2 Batch 1 Listings]:
 - Or enter custom text, e.g.: `My Study CSR Batch 1 Tables`
 - **Used for**: XML header display and document heading
 
-### 3. 输出文件名 (Output Filename) - ⭐ NEW
+### 3. Output Filename (Output Filename) - ⭐ NEW
 ```
 Step 3/6: Set Output PDF Filename
 IMPORTANT: Filename cannot contain spaces (use '_' instead)
@@ -109,7 +110,7 @@ Enter output filename [Default: AZD0901_CSR_DR2_Batch_1_Listings]:
 - ✅ `Study-DR2-Batch1` → Valid (hyphens OK)
 - ✅ `AZD0901_CSR_DR2` → Valid
 
-### 4. 文件位置前缀 (File Location)
+### 4. File Location (File Location)
 ```
 Step 4/6: Set File Location
 Enter file location [Default: root/cdar/d980/d9802c00001/ar/dr2/tlf/dev/output/]:
@@ -117,7 +118,7 @@ Enter file location [Default: root/cdar/d980/d9802c00001/ar/dr2/tlf/dev/output/]
 - Press Enter to use default value
 - Or enter custom path
 
-### 5. 输出XML路径 (Output XML Path)
+### 5. Output XML Path (Output XML Path)
 ```
 Step 5/6: Select Output Location
 Please select save location and filename in the popup window...
@@ -127,7 +128,7 @@ Please select save location and filename in the popup window...
 - Default filename with timestamp: `_batch_list_20260211_143025.xml`
 - Can modify filename and save location
 
-### 6. 起始页码 (Starting Page Number)
+### 6. Starting Page Number (Starting Page Number)
 ```
 Step 6/6: Set Starting Page Number
 Enter starting page number [Default: 2]:
@@ -137,9 +138,9 @@ Enter starting page number [Default: 2]:
 
 ---
 
-## 输出格式 / Output Format
+## Output Format / Output Format
 
-生成的XML文件格式示例：
+Example of generated XML file format:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -179,80 +180,80 @@ Enter starting page number [Default: 2]:
 </pdf-builder-metadata>
 ```
 
-**注意**: 除了以下用户自定义的内容外，其他所有内容（如ruleset结构、page、font等）都是固定的：
-- `header text` 和 `document-heading text`: 用户自定义 (Step 2)
-- `header startNumber`: 用户自定义 (Step 6, 默认2)
-- `output-pdf filename`: 用户自定义 (Step 3) - **NEW**
-- `output-audit filename`: 用户自定义 (Step 3) + "_audit" - **NEW**
-- `pdf-import` 和 `audit-import` path: 自动从file location提取
-- `section name`: 从Excel的sect_num和sect_ttl列拼接
-- `source-file filename`: 从Excel的OUTFILE列 + ".rtf"
-- `source-file fileLocation`: 用户自定义 (Step 4)
-- `source-file number`: 从Excel的"Output Type"和"tocnumber"列拼接
-- `source-file title`: 从Excel的Title列
+**Note**: Except for the following user-defined content, all other content (such as ruleset structure, page, font, etc.) is fixed:
+- `header text` and `document-heading text`: User-defined (Step 2)
+- `header startNumber`: User-defined (Step 6, default 2)
+- `output-pdf filename`: User-defined (Step 3) - **NEW**
+- `output-audit filename`: User-defined (Step 3) + "_audit" - **NEW**
+- `pdf-import` and `audit-import` path: Automatically extracted from file location
+- `section name`: Concatenated from Excel's sect_num and sect_ttl columns
+- `source-file filename`: From Excel's OUTFILE column + ".rtf"
+- `source-file fileLocation`: User-defined (Step 4)
+- `source-file number`: Concatenated from Excel's "Output Type" and "tocnumber" columns
+- `source-file title`: From Excel's Title column
 
 ---
 
-## 特殊功能 / Special Features
+## Special Features / Special Features
 
-### 1. 智能数字排序
+### 1. Intelligent Numeric Sorting
 
-工具会正确处理section编号的数字排序：
-- ✅ 14.1, 14.2, 14.10, 14.20 (正确)
-- ❌ 不会出现: 14.1, 14.10, 14.2, 14.20 (错误的字符串排序)
+The tool correctly handles numeric sorting of section numbers:
+- ✅ 14.1, 14.2, 14.10, 14.20 (Correct)
+- ❌ Will not happen: 14.1, 14.10, 14.2, 14.20 (Incorrect string sorting)
 
-### 2. Latin1字符检查
+### 2. Latin1 Character Check
 
-在生成XML前，工具会检查所有文本是否只包含latin1字符：
+Before generating XML, the tool checks whether all text contains only latin1 characters:
 
-- ✅ 如果全部兼容，直接生成
-- ⚠ 如果发现非latin1字符：
-  - 列出所有问题位置
-  - 显示具体的问题字符
-  - 询问是否继续
+- ✅ If all compatible, generate directly
+- ⚠ If non-latin1 characters found:
+  - List all problem locations
+  - Show specific problem characters
+  - Ask whether to continue
 
-**常见非latin1字符**:
-- 中文字符: 如 "分析"
-- 特殊符号: ≥, ≤, —, ±, °, μ 等
-- 非ASCII引号: " " ' '
+**Common non-latin1 characters**:
+- Chinese characters: such as "分析"
+- Special symbols: ≥, ≤, —, ±, °, μ, etc.
+- Non-ASCII quotes: " " ' '
 
-**解决方法**:
-- 将中文替换为英文
-- 将特殊符号替换为ASCII等效字符:
+**Solutions**:
+- Replace Chinese with English
+- Replace special symbols with ASCII equivalents:
   - `≥` → `>=`
   - `≤` → `<=`
   - `—` → `-`
   - `±` → `+/-`
 
-### 3. 数据验证
+### 3. Data Validation
 
-工具会自动验证：
-- ✅ 必需列是否存在
-- ✅ 文件是否可读
-- ✅ 数据完整性
-- ✅ 字符编码兼容性
+The tool automatically validates:
+- ✅ Whether required columns exist
+- ✅ Whether file is readable
+- ✅ Data integrity
+- ✅ Character encoding compatibility
 
 ---
 
-## 常见问题 / FAQ
+## FAQ / FAQ
 
-### Q0: bat文件运行时窗口闪退怎么办？
+### Q0: The bat file flashes and closes, what should I do?
 
-**A**: 这通常表示某些依赖包未安装。请按以下步骤诊断：
+**A**: This usually indicates that some dependent packages are not installed. Please diagnose following these steps:
 
-1. **运行测试脚本**: 双击 `test_environment.bat`
-2. **查看哪些模块缺失**
-3. **安装缺失的包**: 
+1. **Run diagnostic tool**: Double-click `test_environment.bat`
+2. **Check which modules are missing**
+3. **Install missing packages**: 
    ```bash
    pip install pandas openpyxl
    ```
-4. **重新运行** `run_generate_batch_xml.bat`
+4. **Re-run** `run_generate_batch_xml.bat`
 
-**注意**: 增强版的bat文件现在会显示错误信息并保持窗口打开。
+**Note**: The enhanced bat file now displays error messages and keeps the window open.
 
-### Q1: 提示"缺少必需的列"怎么办？
+### Q1: Error says "missing required columns", what should I do?
 
-**A**: 检查Excel文件的列名是否完全匹配（包括大小写和空格）：
+**A**: Check whether the Excel file's column names exactly match (including case and spaces):
 - `sect_num`
 - `sect_ttl`
 - `OUTFILE`
@@ -260,121 +261,123 @@ Enter starting page number [Default: 2]:
 - `tocnumber`
 - `Title`
 
-### Q2: CSV文件读取失败怎么办？
+### Q2: CSV file read failed, what should I do?
 
-**A**: 工具会自动尝试多种编码。如果仍失败，请：
-1. 用Excel打开CSV
-2. 另存为UTF-8编码的CSV
-3. 重新运行工具
+**A**: The tool will automatically try multiple encodings. If it still fails, please:
+1. Open CSV in Excel
+2. Save as CSV with UTF-8 encoding
+3. Re-run the tool
 
-### Q3: 发现非latin1字符警告，怎么处理？
+### Q3: Found non-latin1 character warning, how to handle?
 
-**A**: 有三个选择：
-1. **取消生成**，返回Excel修改内容
-2. **继续生成**，但XML可能在某些系统中显示异常
-3. **修改后重新生成**（推荐）
+**A**: Three options:
+1. **Cancel generation**, return to Excel and modify content
+2. **Continue generation**, but XML may display abnormally on some systems
+3. **Modify then regenerate** (recommended)
 
-### Q4: Section顺序不对怎么办？
+### Q4: Section order is incorrect, what should I do?
 
-**A**: 检查Excel中的`sect_num`列：
-- 确保格式一致（都是数字，如14.1）
-- 确保没有额外空格
-- 工具会自动进行数字排序
+**A**: Check the `sect_num` column in Excel:
+- Ensure format is consistent (all numbers, like 14.1)
+- Ensure no extra spaces
+- The tool will automatically perform numeric sorting
 
-### Q5: 想修改XML模板怎么办？
+### Q5: Want to modify XML template, what should I do?
 
-**A**: 编辑 `generate_batch_xml.py` 文件中的 `generate_xml()` 方法。
+**A**: Edit the `generate_xml()` method in the `generate_batch_xml.py` file.
 
-### Q6: Output filename中包含空格怎么办？ ⭐ NEW
+### Q6: Output filename contains spaces, what should I do? ⭐ NEW
 
-**A**: 工具会自动验证并拒绝包含空格的文件名：
-- ❌ 输入包含空格 → 显示错误并要求重新输入
-- ✅ 使用下划线 `_` 替代空格
-- 示例:
+**A**: The tool will automatically validate and reject filenames with spaces:
+- ❌ Input contains spaces → Display error and request re-entry
+- ✅ Use underscore `_` instead of spaces
+- Example:
   ```
-  错误: My Study DR2
-  正确: My_Study_DR2
+  Wrong: My Study DR2
+  Correct: My_Study_DR2
   ```
-- 如果直接按回车使用默认值，工具会自动将header text中的空格转换为下划线
+- If you directly press Enter to use the default value, the tool will automatically convert spaces to underscores in the header text
 
 ---
 
-## 文件结构 / File Structure
+## File Structure / File Structure
 
 ```
 03_mastertoc/
-├── generate_batch_xml.py          # 主程序
-├── run_generate_batch_xml.bat     # Windows批处理文件
-├── test_environment.bat            # 环境测试脚本（诊断用）
-├── test_imports.py                 # 导入测试脚本（诊断用）
-├── README_GENERATE_BATCH_XML.md   # 本文档
+├── generate_batch_xml.py          # Main program
+├── run_generate_batch_xml.bat     # Windows batch file
+├── test_environment.bat            # Environment test script (for diagnosis)
+├── test_imports.py                 # Import test script (for diagnosis)
+├── README_GENERATE_BATCH_XML.md   # This document
 │
-├── 02_output/                     # 输入文件夹（存放Excel/CSV）
+├── 02_output/                     # Input folder (store Excel/CSV)
 │   └── 2026-02-11/
 │       └── Clinical Study Report_TiFo.csv
 │
-└── 03_xml/                        # 输出文件夹（存放生成的XML）
+└── 03_xml/                        # Output folder (store generated XML)
     └── _batch_list_YYYYMMDD_HHMMSS.xml
 ```
 
-### 诊断工具
+### Diagnostic Tools
 
-**test_environment.bat** - 环境诊断工具
-- 检查Python版本
-- 检查所有必需的模块是否已安装
-- 如果遇到问题，先运行这个工具
+**test_environment.bat** - Environment diagnostic tool
+- Check Python version
+- Check whether all required modules are installed
+- If you encounter problems, run this tool first
 
 ---
 
-## 技术细节 / Technical Details
+## Technical Details / Technical Details
 
-### 依赖库 / Dependencies
+### Dependencies / Dependencies
 
 ```
 pandas
 openpyxl (for Excel files)
-tkinter (文件选择对话框，Python通常自带)
+tkinter (file selection dialog, usually comes with Python)
 ```
 
-### 安装依赖
+### Install Dependencies
 
 ```bash
 pip install pandas openpyxl
 ```
 
-**注意**: `tkinter` 通常随Python一起安装。如果遇到 `ModuleNotFoundError: No module named 'tkinter'`，请参考Python官方文档安装。
+**Note**: `tkinter` usually comes with Python. If you encounter `ModuleNotFoundError: No module named 'tkinter'`, please refer to the Python official documentation for installation.
 
-### Python版本要求
+### Python Version Requirements
 
 - Python 3.6+
 
 ---
 
-## 更新日志 / Changelog
+## Changelog / Changelog
 
 ### Version 1.1.0 (2026-02-12) ⭐ NEW
-- ✅ **新增**: 独立的Output PDF Filename输入步骤
-- ✅ **新增**: 文件名空格验证（不允许空格，必须使用下划线）
-- ✅ **改进**: 从5步流程扩展为6步流程，更清晰
-- ✅ **改进**: Header text和Output filename分离，提供更大灵活性
-- ✅ **改进**: 自动从file location提取基础路径用于pdf-import/audit-import
-- ✅ **改进**: 全英文界面和错误提示
+- ✅ **New**: Separate Output PDF Filename input step
+- ✅ **New**: Filename space validation (spaces not allowed, must use underscores)
+- ✅ **Improvement**: Expanded from 5-step process to 6-step process for better clarity
+- ✅ **Improvement**: Separated header text and output filename for greater flexibility
+- ✅ **Improvement**: Automatically extract base path from file location for pdf-import/audit-import
+- ✅ **Improvement**: Full English interface and error messages
 
 ### Version 1.0.0 (2026-02-11)
-- ✅ 初始版本发布
-- ✅ 支持Excel和CSV输入
-- ✅ 自动数字排序
-- ✅ Latin1字符验证
-- ✅ 交互式界面
+- ✅ Initial version released
+- ✅ Support for Excel and CSV input
+- ✅ Automatic numeric sorting
+- ✅ Latin1 character validation
+- ✅ Interactive interface
 
 ---
 
-## 作者 / Author
+## Author / Author
 
 Generated by GitHub Copilot Assistant
 
 ---
 
-## 许可 / License
+## License / License
 
-内部使用工具 / Internal use only
+Internal use only tool / Internal use only
+
+```

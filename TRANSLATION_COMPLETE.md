@@ -1,3 +1,4 @@
+```markdown
 # English Translation Summary
 
 ## Completed Translations ✓
@@ -54,7 +55,7 @@ The following Python files contain Chinese text in:
 ### Not Impacting Users:
 - **Python comments and docstrings**: Low priority
   - Only visible in source code
-  - Does not affect program ran execution
+  - Does not affect program execution
 
 ## Recommendations
 
@@ -101,4 +102,6 @@ All updated files are in:
 
 ---
 **Date**: February 12, 2026
-**Status**: BAT files完成 - Fully functional, encoding issues resolved
+**Status**: BAT files Complete - Fully functional, encoding issues resolved
+
+```

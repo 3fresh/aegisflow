@@ -1,3 +1,4 @@
+```markdown
 # TLF Template Filling - Bug Fix Report
 
 ## Problem Description
@@ -25,174 +26,176 @@ But the script uses pandas' **default `header=0` parameter** to read files, caus
 - Actual column headers (Row 2) treated as data
 - Expected column names not found
 
-## 修复方案
+## Fix Solution
 
-### 1. 更新 `fill_tlf_template.py`
+### 1. Update `fill_tlf_template.py`
 
-**修改点1：读取template文件**
+**Change Point 1: Read template file**
 ```python
-# 修改前：
+# Before:
 template_df = pd.read_excel(template_file, sheet_name='TLF')
 
-# 修改后：
+# After:
 template_df = pd.read_excel(template_file, sheet_name='TLF', header=1)
 ```
 
-**修改点2：读取people_management文件**
+**Change Point 2: Read people_management file**
 ```python
-# 修改前：
+# Before:
 people_df = pd.read_excel(people_file)
 
-# 修改后：
+# After:
 xls = pd.ExcelFile(people_file)
 sheet_name = 'TLF' if 'TLF' in xls.sheet_names else xls.sheet_names[0]
 people_df = pd.read_excel(people_file, sheet_name=sheet_name, header=1)
 ```
 
-**修改点3：列名映射**
+**Change Point 3: Column name mapping**
 ```python
-# Template中的列可能有尾部空格，需要完全匹配：
+# Template columns may have trailing spaces, need to match exactly:
 column_map = {
     'Output Type (Table, Listing, Figure)': 'Output Type (Table, Listing, Figure)',
-    'tocnumber': 'Output # ',  # 注意尾部空格
+    'tocnumber': 'Output # ',  # Note: trailing space
     'Title': 'Title',
-    'sect_num': 'Section # ',  # 注意尾部空格
+    'sect_num': 'Section # ',  # Note: trailing space
     ...
 }
 ```
 
-### 2. 更新 `test_fill_tlf_template.py`
+### 2. Update `test_fill_tlf_template.py`
 
-应用相同的修改，以便在提交前测试。
+Apply same changes for testing before submission.
 
-## 验证结果
+## Verification Results
 
-修复后，脚本成功：
+After fix, script successfully:
 
-✅ **读取people_management.xlsx**
+✅ **Read people_management.xlsx**
 - Sheet: TLF
-- 行数: 1314 (header=1后)
-- 列数: 39
-- 正确识别的列: `['Program Name', 'Programmer', 'QC Program', 'QC Programmer', ...]`
+- Row count: 1314 (after header=1)
+- Column count: 39
+- Correctly identified columns: `['Program Name', 'Programmer', 'QC Program', 'QC Programmer', ...]`
 
-✅ **读取template文件**  
+✅ **Read template file**  
 - Sheet: TLF
-- 行数: 249 (基于seq转置)
-- 列数: 24
-- 正确识别的列: `['Output Type (...)','Output # ','Title', 'Section # ', ...]`
+- Row count: 249 (based on seq transpose)
+- Column count: 24
+- Correctly identified columns: `['Output Type (...)','Output # ','Title', 'Section # ', ...]`
 
-✅ **数据完整性**
-- 数据完整性: 249/249行 ✅
-- 重复program+suffix: 8行（已标黄警告）
-- 与新版MOSAIC_CONVERT输出兼容（已验证249行）
+✅ **Data Integrity**
+- Data completeness: 249/249 rows ✅
+- Duplicate program+suffix: 8 rows (already marked with yellow warning)
+- Compatible with new version of MOSAIC_CONVERT output (verified 249 rows)
 
-## 关键代码变更
+## Key Code Changes
 
-### fill_tlf_template.py 第90-110行
+### fill_tlf_template.py Lines 90-110
 ```python
-# Step 2: 读取模板文件
-print("\n[5] 正在读取模板文件...")
+# Step 2: Read template file
+print("\n[5] Reading template file...")
 try:
-    # 第1行是标题，第2行是列名，所以用header=1
+    # Row 1 is title, Row 2 is column headers, so use header=1
     template_df = pd.read_excel(template_file, sheet_name='TLF', header=1)
-    print(f"✓ 读取了模板文件，共 {len(template_df)} 行")
+    print(f"✓ Read template file, total {len(template_df)} rows")
 except Exception as e:
-    print(f"❌ 读取模板文件失败: {e}")
+    print(f"❌ Failed to read template file: {e}")
     return False
 
-# Step 3: 读取people_management文件
-print("\n[6] 正在读取people_management文件...")
+# Step 3: Read people_management file
+print("\n[6] Reading people_management file...")
 try:
-    # people_management.xlsx 有多个sheet，使用TLF sheet
-    # 第1行是标题，第2行是列名，所以用header=1
+    # people_management.xlsx has multiple sheets, use TLF sheet
+    # Row 1 is title, Row 2 is column headers, so use header=1
     xls = pd.ExcelFile(people_file)
     sheet_name = 'TLF' if 'TLF' in xls.sheet_names else xls.sheet_names[0]
     people_df = pd.read_excel(people_file, sheet_name=sheet_name, header=1)
-    print(f"✓ 读取了 {len(people_df)} 行人员数据")
+    print(f"✓ Read {len(people_df)} rows of personnel data")
 except Exception as e:
-    print(f"❌ 读取people_management文件失败: {e}")
+    print(f"❌ Failed to read people_management file: {e}")
     return False
 ```
 
-## 兼容性说明
+## Compatibility Notes
 
-这个修复：
-- ✅ 与原始的MOSAIC_CONVERT输出兼容（已验证245行）
-- ✅ 与实际的people_management.xlsx兼容（39列全部识别）  
-- ✅ 与Oncology模板文件兼容（26列全部识别）
-- ✅ 向后兼容（不破坏现有功能）
+This fix:
+- ✅ Compatible with original MOSAIC_CONVERT output (verified 245 rows)
+- ✅ Compatible with actual people_management.xlsx (all 39 columns identified)  
+- ✅ Compatible with Oncology template file (all 26 columns identified)
+- ✅ Backward compatible (does not break existing functionality)
 
-## 测试步骤
+## Test Steps
 
-1. 运行 `verify_workflow.py` 验证文件结构
+1. Run `verify_workflow.py` to verify file structure
    ```bash
    python verify_workflow.py
    ```
 
-2. 运行测试脚本 `test_fill_tlf_template.py`
+2. Run test script `test_fill_tlf_template.py`
    ```bash
    python test_fill_tlf_template.py
    ```
 
-3. 运行主脚本 `fill_tlf_template.py`（使用GUI）
+3. Run main script `fill_tlf_template.py` (with GUI)
    ```bash
    python fill_tlf_template.py
    ```
-   或
+   or
    ```bash
    run_fill_tlf_template.bat
    ```
 
-## 影响范围
+## Impact Scope
 
-- **文件修改**:
+- **Files modified**:
   - `fill_tlf_template.py` ✅
   - `test_fill_tlf_template.py` ✅
 
-- **无需修改**:
-  - `mosaic_convert.py` (已正确读取CSV)
-  - `verify_workflow.py` (检查已正确通过)
-  - 所有输入文件
+- **No changes needed**:
+  - `mosaic_convert.py` (already reads CSV correctly)
+  - `verify_workflow.py` (verification already passed)
+  - All input files
 
 ---
-**修复日期**: 2026年2月10日  
-**修复版本**: fill_tlf_template.py v1.1  
-**状态**: ✅ 已验证并生产就绪
+**Fix Date**: February 10, 2026  
+**Fix Version**: fill_tlf_template.py v1.1  
+**Status**: ✅ Verified and production ready
 
 ---
 
-## v1.2 优化更新（2026年2月11日）
+## v1.2 Optimization Update (February 11, 2026)
 
-### 主要改进
+### Main Improvements
 
-1. **简化输入流程**
-   - ❌ 移除：需要选择模板文件（template_file）
-   - ✅ 新增：自动基于people_management文件结构进行操作
+1. **Simplified Input Process**
+   - ❌ Removed: Need to select template file (template_file)
+   - ✅ New: Automatically operate based on people_management file structure
 
-2. **三级联动匹配**
-   - **第一优先级**：Output Name精确匹配
-   - **第二优先级**：Program Name补充匹配（未匹配行）
-   - **第三优先级**：标记和高亮
-     - 🟨 黄色高亮：Output Name和Program Name都未匹配
-     - 🟩 绿色高亮：仅通过Program Name匹配成功
-     - 仅高亮Programmer、QC Program、QC Programmer三列
+2. **Three-Level Cascading Matching**
+   - **First Priority**: Exact Output Name matching
+   - **Second Priority**: Program Name supplementary matching (for unmatched rows)
+   - **Third Priority**: Highlighting and marking
+     - 🟨 Yellow highlight: Both Output Name and Program Name unmatched
+     - 🟩 Green highlight: Matched successfully using only Program Name
+     - Only highlight Programmer, QC Program, QC Programmer columns
 
-3. **文件结构保留**
-   - ✅ 保留people_management中的所有sheet
-   - ✅ 保留目标sheet中的所有原有列
-   - ✅ 仅在对应列中更新MOSAIC合并数据
-   - ✅ 不修改原输入文件
+3. **File Structure Preserved**
+   - ✅ Retain all sheets in people_management
+   - ✅ Retain all original columns in target sheet
+   - ✅ Only update MOSAIC merged data in corresponding columns
+   - ✅ Do not modify original input files
 
-4. **用户友好的输出**
-   - 用户选择输出文件的保存位置和文件名
-   - 默认建议名称：people_management_updated.xlsx
-   - 输出统计信息展示匹配结果
+4. **User-Friendly Output**
+   - User selects output file save location and filename
+   - Default suggested name: people_management_updated.xlsx
+   - Output statistics display matching results
 
-### 技术改进
+### Technical Improvements
 
-- 添加文件锁定重试机制（3次重试，每次间隔1秒）
-- 改进错误提示信息
-- 优化内存使用（直接操作现有workbook而非创建新文件）
+- Add file lock retry mechanism (3 retries, 1 second interval each)
+- Improve error message information
+- Optimize memory usage (operate on existing workbook directly instead of creating new file)
 
-**新版本**: fill_tlf_template.py v1.2  
-**状态**: ✅ 已验证并生产就绪
+**New Version**: fill_tlf_template.py v1.2  
+**Status**: ✅ Verified and production ready
+
+```

@@ -1,112 +1,113 @@
+```markdown
 # AegisFlow - XML Troubleshooting Guide
 
 **Transform, Validate, Deliver from a Single TOC**
 
-## 🔧 问题: bat文件闪退
+## 🔧 Issue: Bat file flashes and closes
 
-### 步骤1: 运行诊断工具
+### Step 1: Run diagnostic tool
 
-双击运行 `test_environment.bat`
+Double-click to run `test_environment.bat`
 
-这将检查:
-- ✅ Python是否已安装
-- ✅ Python版本
-- ✅ pandas模块
-- ✅ openpyxl模块
-- ✅ tkinter模块
-- ✅ xml模块
+This will check:
+- ✅ Whether Python is installed
+- ✅ Python version
+- ✅ pandas module
+- ✅ openpyxl module
+- ✅ tkinter module
+- ✅ xml module
 
-### 步骤2: 根据诊断结果修复
+### Step 2: Fix based on diagnostic results
 
-**如果显示 pandas 未安装:**
+**If pandas is shown as not installed:**
 ```bash
 pip install pandas
 ```
 
-**如果显示 openpyxl 未安装:**
+**If openpyxl is shown as not installed:**
 ```bash
 pip install openpyxl
 ```
 
-**如果显示 tkinter 未安装:**
-- Windows用户: 重新安装Python，确保勾选"tcl/tk and IDLE"选项
-- 或者: 程序会自动切换到命令行模式（手动输入路径）
+**If tkinter is shown as not installed:**
+- Windows users: Reinstall Python and make sure to check "tcl/tk and IDLE" option
+- Or: The program will automatically switch to command line mode (manually enter path)
 
-**一次性安装所有依赖:**
+**Install all dependencies at once:**
 ```bash
 pip install pandas openpyxl
 ```
 
-### 步骤3: 重新运行
+### Step 3: Re-run
 
-修复后，再次双击 `run_generate_batch_xml.bat`
-
----
-
-## 🔧 问题: 提示"未选择文件"
-
-**原因**: 在文件选择窗口中点击了"取消"
-
-**解决**: 重新运行程序，在窗口中选择文件
+After fixing, double-click `run_generate_batch_xml.bat` again
 
 ---
 
-## 🔧 问题: 找不到文件选择窗口
+## 🔧 Issue: Error "No file selected"
 
-**可能原因**:
-1. 窗口在其他窗口后面 → 检查任务栏
-2. tkinter未安装 → 运行诊断工具检查
-3. 窗口在另一个显示器上 → 检查所有屏幕
+**Cause**: Clicked "Cancel" in the file selection window
 
-**备用方案**:
-- 程序会自动检测tkinter是否可用
-- 如不可用，会切换到命令行输入模式
-- 在命令行中手动输入文件路径即可
+**Solution**: Re-run the program and select file in the window
 
 ---
 
-## 🔧 问题: 虚拟环境未找到
+## 🔧 Issue: Cannot find file selection window
 
-**现象**: bat文件显示"虚拟环境不存在，使用系统Python..."
+**Possible causes**:
+1. Window is behind other windows → Check taskbar
+2. tkinter is not installed → Run diagnostic tool to check
+3. Window is on another monitor → Check all screens
 
-**这是正常的**，如果:
-- 系统Python已安装所需的包
-- 可以正常运行程序
-
-**如果想使用虚拟环境**:
-1. 在项目目录打开命令行
-2. 运行: `py -3.13 -m venv .venv`
-3. 激活: `.venv\Scripts\activate`
-4. 安装依赖: `pip install pandas openpyxl`
+**Backup plan**:
+- The program will automatically detect if tkinter is available
+- If not available, will switch to command line input mode
+- Simply enter file path manually in the command line
 
 ---
 
-## 🔧 问题: Excel文件读取失败
+## 🔧 Issue: Virtual environment not found
 
-**可能原因和解决方法**:
+**Symptom**: Bat file shows "Virtual environment does not exist, using system Python..."
 
-1. **文件正在被其他程序打开**
-   - 关闭Excel或其他正在使用该文件的程序
+**This is normal** if:
+- System Python has all required packages installed
+- Program can run normally
 
-2. **文件路径包含特殊字符**
-   - 重命名文件，避免使用特殊字符
-
-3. **文件格式不正确**
-   - 确保是 .xlsx, .xls, 或 .csv 格式
-
-4. **文件编码问题（CSV）**
-   - 程序会自动尝试多种编码
-   - 如果仍失败，用Excel打开后另存为UTF-8编码的CSV
+**If you want to use virtual environment**:
+1. Open command line in project directory
+2. Run: `py -3.13 -m venv .venv`
+3. Activate: `.venv\Scripts\activate`
+4. Install dependencies: `pip install pandas openpyxl`
 
 ---
 
-## 🔧 问题: 列名不匹配
+## 🔧 Issue: Excel file read failed
 
-**错误信息**: "缺少必需的列: xxx"
+**Possible causes and solutions**:
 
-**解决方法**:
-1. 打开Excel文件
-2. 检查列名是否完全匹配（包括大小写、空格）:
+1. **File is open in another program**
+   - Close Excel or other programs using this file
+
+2. **File path contains special characters**
+   - Rename file to avoid special characters
+
+3. **File format is incorrect**
+   - Make sure it's .xlsx, .xls, or .csv format
+
+4. **File encoding issue (CSV)**
+   - Program will automatically try multiple encodings
+   - If still fails, open in Excel then save as UTF-8 encoded CSV
+
+---
+
+## 🔧 Issue: Column names do not match
+
+**Error message**: "Missing required columns: xxx"
+
+**Solution**:
+1. Open Excel file
+2. Check whether column names exactly match (including case, spaces):
    - `sect_num`
    - `sect_ttl`
    - `OUTFILE`
@@ -114,37 +115,39 @@ pip install pandas openpyxl
    - `tocnumber`
    - `Title`
 
-3. 如果列名不同，修改Excel文件的列名
+3. If column names are different, modify Excel file's column names
 
 ---
 
-## 📞 仍然无法解决？
+## 📞 Still cannot resolve?
 
-1. **查看完整错误信息**
-   - 增强版bat文件会显示详细错误
-   - 截图发送给技术支持
+1. **Check full error message**
+   - Enhanced bat file displays detailed errors
+   - Take screenshot and send to technical support
 
-2. **查看完整文档**
+2. **Check full documentation**
    - [README_GENERATE_BATCH_XML.md](README_GENERATE_BATCH_XML.md)
    - [QUICK_START_GENERATE_XML.md](QUICK_START_GENERATE_XML.md)
 
-3. **手动运行Python脚本**
+3. **Manually run Python script**
    ```bash
    python generate_batch_xml.py
    ```
-   查看详细错误信息
+   View detailed error messages
 
 ---
 
-## ✅ 快速检查清单
+## ✅ Quick Verification Checklist
 
-运行前确认:
+Verify before running:
 
-- [ ] Python已安装（建议3.6+）
-- [ ] pandas已安装
-- [ ] openpyxl已安装
-- [ ] Excel/CSV文件准备好
-- [ ] Excel文件包含所有必需的列
-- [ ] Excel文件未被其他程序打开
+- [ ] Python is installed (recommend 3.6+)
+- [ ] pandas is installed
+- [ ] openpyxl is installed
+- [ ] Excel/CSV file is ready
+- [ ] Excel file contains all required columns
+- [ ] Excel file is not open in other programs
 
-**全部确认后，运行**: `run_generate_batch_xml.bat`
+**After all verified, run**: `run_generate_batch_xml.bat`
+
+```
