@@ -1,3 +1,4 @@
+```markdown
 # AegisFlow - Quick Start for Batch XML
 
 **Transform, Validate, Deliver from a Single TOC**
@@ -57,9 +58,9 @@ Output file location: `03_xml/_batch_list_YYYYMMDD_HHMMSS.xml`
 
 ---
 
-## 📋 完整示例
+## 📋 Complete Example
 
-### 输入Excel示例
+### Input Excel Example
 
 | sect_num | sect_ttl | OUTFILE | Output Type | tocnumber | Title |
 |----------|----------|---------|-------------|-----------|-------|
@@ -67,7 +68,7 @@ Output file location: `03_xml/_batch_list_YYYYMMDD_HHMMSS.xml`
 | 14.1 | Study Population | t_aztoncsp16_itt | Table | 14.1.2 | Recruitment per region |
 | 14.2.1 | Primary Endpoint - PFS | t_aztoncef04_pfs_bicr_itt | Table | 14.2.1.1 | PFS by BICR |
 
-### 输出XML示例
+### Output XML Example
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -102,84 +103,85 @@ Output file location: `03_xml/_batch_list_YYYYMMDD_HHMMSS.xml`
 
 ---
 
-## ⚠️ 常见问题处理
+## ⚠️ Common Issues and Solutions
 
-### 问题0: bat文件运行时窗口闪退
+### Issue 0: Batch file window closes on run
 
-**现象**: 双击bat文件后，窗口一闪就消失了
+**Symptom**: After double-clicking the batch file, the window disappears immediately
 
-**诊断步骤**:
-1. **先运行测试脚本**: 双击 `test_environment.bat`
-   - 这会检查Python和所有必需的模块是否已安装
-   - 窗口会停留，显示测试结果
+**Troubleshooting Steps**:
+1. **Run test script first**: Double-click `test_environment.bat`
+   - This will check if Python and all required modules are installed
+   - The window will remain open, showing test results
 
-2. **查看测试结果**:
-   - 如果 pandas 或 openpyxl 未安装，运行: `pip install pandas openpyxl`
-   - 如果 tkinter 未安装，参考下面的解决方法
+2. **Review test results**:
+   - If pandas or openpyxl is not installed, run: `pip install pandas openpyxl`
+   - If tkinter is not installed, refer to the solution below
 
-3. **如果tkinter未安装**:
-   - Windows: tkinter通常随Python一起安装，重新安装Python并勾选"tcl/tk"选项
-   - 或者，程序会自动切换到命令行输入模式（手动输入路径）
+3. **If tkinter is not installed**:
+   - Windows: tkinter usually comes with Python; reinstall Python and check the "tcl/tk" option
+   - Alternatively, the program will automatically switch to command-line input mode (manual path entry)
 
-### 问题1: 文件选择窗口没有显示
+### Issue 1: File selection window does not appear
 
-**现象**: 运行工具后没有看到文件选择窗口
+**Symptom**: After running the tool, no file selection window appears
 
-**解决方法**:
-1. 窗口可能在其他窗口后面，请检查任务栏
-2. 查看命令行是否有错误提示
-3. 如果提示tkinter未安装，程序会自动切换到命令行输入模式
+**Solution**:
+1. The window may be behind other windows; check the taskbar
+2. Check if there are error messages in the command line
+3. If tkinter is not installed, the program will automatically switch to command-line input mode
 
-### 问题2: 发现非latin1字符警告
+### Issue 2: Non-Latin1 character warning detected
 
-**现象**:
+**Symptom**:
 ```
-⚠ 警告: 发现非latin1字符!
-  行 5, 列 'Title':
-    内容: Proportion of participants with maintained...
-    问题字符: ≥
+⚠ Warning: Non-Latin1 characters found!
+  Row 5, Column 'Title':
+    Content: Proportion of participants with maintained...
+    Problem character: ≥
 ```
 
-**解决方法**:
-1. 返回Excel文件
-2. 将 `≥` 替换为 `>=`
-3. 将 `≤` 替换为 `<=`
-4. 重新运行工具
+**Solution**:
+1. Return to the Excel file
+2. Replace `≥` with `>=`
+3. Replace `≤` with `<=`
+4. Rerun the tool
 
-### 问题2: Section顺序不对
+### Issue 3: Section order is incorrect
 
-**检查**:
-- Excel中sect_num列格式是否一致
-- 是否有额外空格
+**Check**:
+- Whether the sect_num column format in Excel is consistent
+- Whether there are extra spaces
 
-**提示**: 工具会自动按数字排序（14.2.10会排在14.2.2之后）
+**Tip**: The tool automatically sorts by number (14.2.10 will be sorted after 14.2.2)
 
-### 问题3: 缺少必需的列
+### Issue 4: Missing required columns
 
-**检查列名**是否完全匹配（注意大小写和空格）:
-- `sect_num` （不是sect_number）
-- `sect_ttl` （不是sect_title）
-- `OUTFILE` （全大写）
-- `Output Type (Table, Listing, Figure)` （包括括号）
-- `tocnumber` （不是toc_number）
-- `Title` （首字母大写）
+**Check column names** for exact matches (note capitalization and spaces):
+- `sect_num` (not sect_number)
+- `sect_ttl` (not sect_title)
+- `OUTFILE` (all uppercase)
+- `Output Type (Table, Listing, Figure)` (include parentheses)
+- `tocnumber` (not toc_number)
+- `Title` (capitalized)
 
 ---
 
-## 📞 需要帮助？
+## 📞 Need Help?
 
-查看完整文档: [README_GENERATE_BATCH_XML.md](README_GENERATE_BATCH_XML.md)
+View complete documentation: [README_GENERATE_BATCH_XML.md](README_GENERATE_BATCH_XML.md)
 
 ---
 
-## ✅ 检查清单
+## ✅ Checklist
 
-使用前确认：
+Before using, confirm:
 
-- [ ] Excel/CSV文件准备好
-- [ ] 包含所有必需的列
-- [ ] 列名完全匹配
-- [ ] sect_num格式统一
-- [ ] 已安装Python和依赖库（pandas, openpyxl）
+- [ ] Excel/CSV file is ready
+- [ ] Contains all required columns
+- [ ] Column names match exactly
+- [ ] sect_num format is consistent
+- [ ] Python and dependencies are installed (pandas, openpyxl)
 
-准备就绪？运行: `run_generate_batch_xml.bat`
+Ready? Run: `run_generate_batch_xml.bat`
+```
