@@ -1,4 +1,6 @@
-# XML生成规则说明
+# AegisFlow - XML Structure Rules
+
+**Transform, Validate, Deliver from a Single TOC**
 
 ## 📋 XML结构说明
 

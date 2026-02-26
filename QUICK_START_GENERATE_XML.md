@@ -1,4 +1,6 @@
-# Quick Start - Generate Batch List XML Tool
+# AegisFlow - Quick Start for Batch XML
+
+**Transform, Validate, Deliver from a Single TOC**
 
 ## 🚀 Get Started in 5 Minutes
 

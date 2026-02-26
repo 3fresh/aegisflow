@@ -1,4 +1,6 @@
-# 故障排除指南 - Generate Batch XML
+# AegisFlow - XML Troubleshooting Guide
+
+**Transform, Validate, Deliver from a Single TOC**
 
 ## 🔧 问题: bat文件闪退
 

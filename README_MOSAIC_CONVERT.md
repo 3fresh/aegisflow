@@ -1,4 +1,6 @@
-# MOSAIC_CONVERT - VBA宏转Python脚本
+# AegisFlow - MOSAIC Convert
+
+**Transform, Validate, Deliver from a Single TOC**
 
 ## 功能说明
 

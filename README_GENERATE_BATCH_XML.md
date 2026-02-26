@@ -1,4 +1,6 @@
-# Generate Batch List XML Tool
+# AegisFlow - Generate Batch XML
+
+**Transform, Validate, Deliver from a Single TOC**
 
 ## 功能说明 / Overview
 
