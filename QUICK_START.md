@@ -1,5 +1,5 @@
 ```markdown
-# AegisFlow Quick Reference Guide (v2.1)
+# AegisFlow Quick Reference Guide (v2.2)
 
 **Transform, Validate, Deliver from a Single TOC**
 
@@ -57,7 +57,7 @@ c:\Users\kplp794\OneDrive - AZCollaboration\Desktop\roooooot\00-工具开发\cre
 | verify_workflow.py | Root directory | System verification |
 | run_fill_tlf_template.bat | Root directory | Quick launch (Template) |
 | run_fill_tlf_status.bat | Root directory | Quick launch (Status) |
-| Clinical Study Report_TiFo_MOSAIC_CONVERT_updated.xlsx | 02_output\2026-02-09 | MOSAIC Output |
+| Clinical Study Report_TiFo_MOSAIC_CONVERT_YYYYMMDD.xlsx | 02_output | MOSAIC Output (dated) |
 | people_management_sample.xlsx | 02_output\2026-02-09 | Personnel Data |
 | tfl_status.xlsx | 02_output\2026-02-09 | TFL Status Data |
 | Oncology Internal Validation Template and Guidance.xlsx | 02_output\2026-02-09 | TLF Template |
@@ -194,7 +194,7 @@ Clinical Study Report_TiFo.csv
     - program+suffix duplication detection (yellow marker)
     - complete data validation
             ↓
-    MOSAIC_CONVERT_updated.xlsx (249 rows Index sheet)
+    MOSAIC_CONVERT_YYYYMMDD.xlsx (249 rows Index sheet, auto-dated)
             ↓
     [fill_tlf_template.py]
     - Read MOSAIC and people_management
@@ -327,7 +327,7 @@ After running script, verify:
 
 ---
 
-**Last Update:** February 10, 2026  
+**Last Update:** March 5, 2026  
 **Version:** 2.0  
 **Status:** ✅ Production Ready
 ```

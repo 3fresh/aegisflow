@@ -16,18 +16,28 @@ This script implements all functionality of the original VBA macro and adds mult
 4. **Duplicate program+suffix Detection**: After transposition, check if multiple tables use the same program+suffix combination. If detected, warn and highlight in yellow in output
 5. **Output Type Recognition**: Automatically identify Table, Figure, or Listing type
 6. **Title Extraction**: Extract clean title text from title5 field
-7. **CSV Preprocessing**: Only replace first and last single quotes with double quotes in footnote values (keep title unchanged)
+7. **CSV Preprocessing**: In footnote values, normalize `''s` to `'s`, then replace only first and last single quotes with double quotes (keep title unchanged)
 8. **Excel Formatting**: 
    - All fonts using "等线" series
    - Create Index and Original worksheets
    - Header row in bold
    - Columns H, I, J with yellow background
    - H2 cell freeze panes
-   - Non-latin1 characters in red font + green background (do not convert original text content)
+   - Non-latin1 characters and `''s` pattern characters in red font + green background (do not convert original text content)
+   - Empty footnote gaps highlighted in green (empty footnote cells before last non-empty footnote in same row)
+   - Non-empty footnote cells not ending with `"` highlighted in blue
    - Duplicate program+suffix PROGRAM/SUFFIX columns in yellow
    - Correct numeric sorting (14.1.2 before 14.1.10)
 
 ## Key Improvements
+
+### v3.2 - Footnote Rules and Output Naming Enhancements
+- ✅ **Footnote Text Normalization**: Replace `''s` with `'s` during footnote preprocessing
+- ✅ **title7 Rule Enhancement**: Convert `j=C '` to `j=L '` when `title7` is not empty
+- ✅ **Footnote Quality Markers**:
+  - Empty footnote gaps marked in green
+  - Non-empty footnotes not ending with `"` marked in blue
+- ✅ **Default Output Naming with Date**: Auto-generated filename now uses `<input>_MOSAIC_CONVERT_YYYYMMDD.xlsx`
 
 ### v3.1 - OUTFILE Correction and Chinese Path Support
 - ✅ **OUTFILE Data Source Correction**: Directly use `value` from CSV rows with `parm='outfile'`, no longer concatenate from PROGRAM+SUFFIX
@@ -148,7 +158,9 @@ Contains the following columns:
 - **All Content**: Using "等线" font
 - **Header Row**: Bold display
 - **Columns H-J**: Yellow background
-- **Non-latin1 Characters**: Red font + green background
+- **Special Character Marking**: Non-latin1 characters and `''s` pattern characters in red font + green background
+- **Footnote Gap Marking**: Empty footnote gaps in green
+- **Footnote Quote Check**: Non-empty footnote cells not ending with `"` in blue
 - **Shared program+suffix**: tocnumber/PROGRAM/SUFFIX columns yellow background
 - **Sorting**: Numeric sort by tocnumber (14.1.2 before 14.1.10)
 
@@ -191,11 +203,11 @@ Implementation logic:
 ## Output File Naming
 
 - If output filename not specified, default generation in same directory as input file
-- File naming format: `<original_filename>_MOSAIC_CONVERT.xlsx`
+- File naming format: `<original_filename>_MOSAIC_CONVERT_YYYYMMDD.xlsx`
 
 Example:
 - Input: `Clinical Study Report_TiFo.csv`
-- Output: `Clinical Study Report_TiFo_MOSAIC_CONVERT.xlsx`
+- Output: `Clinical Study Report_TiFo_MOSAIC_CONVERT_20260305.xlsx`
 
 ## Comparison with VBA Macro
 
@@ -225,11 +237,12 @@ If script runs into error, please check:
 ## Example Output
 
 ```
-✓ Conversion completed! Output file: Clinical Study Report_TiFo_MOSAIC_CONVERT.xlsx
+✓ Conversion completed! Output file: Clinical Study Report_TiFo_MOSAIC_CONVERT_20260305.xlsx
   - Processed 3211 rows of original data
   - Generated 210 rows of index data
 
-Success! Please see output file: Clinical Study Report_TiFo_MOSAIC_CONVERT.xlsx
+Success! Please see output file: Clinical Study Report_TiFo_MOSAIC_CONVERT_20260305.xlsx
+
 ```
 
 ## Technical Details

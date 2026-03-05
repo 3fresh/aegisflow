@@ -31,7 +31,7 @@ if not defined python_cmd (
     exit /b 1
 )
 
-call %python_cmd% fill_tlf_status.py
+call "%python_cmd%" fill_tlf_status.py
 
 REM Check exit code
 if %ERRORLEVEL% EQU 0 (

@@ -52,7 +52,7 @@ Output files are stored in:
 - Add Excel formatting (fonts, colors, rich text)
 - Support deduplication by tocnumber for unique outputs
 - Correctly handle different tocnumbers with same program+suffix combination
-- Build OUTFILE column from PROGRAM and SUFFIX (format: PROGRAM_SUFFIX)
+- Keep OUTFILE value from source CSV `parm='outfile'` records (business-faithful output)
 
 **Usage:**
 ```bash
@@ -63,7 +63,7 @@ Output files are stored in:
 - Clinical Study Report_TiFo.csv
 
 **Output Files:**
-- DXXXXXXXXXX_TiFo_MOSAIC_CONVERT.xlsx
+- DXXXXXXXXXX_TiFo_MOSAIC_CONVERT_YYYYMMDD.xlsx
 
 **Related Documentation:**
 - README_MOSAIC_CONVERT.md

@@ -258,6 +258,10 @@ def fill_tlf_status():
         people_df[qc_status_col] = None
         print(f"  - Created new column: {qc_status_col}")
     
+    # Convert QC Status column to object dtype to allow string values
+    people_df[qc_status_col] = people_df[qc_status_col].astype('object')
+    print(f"  - Converted QC Status column to object dtype")
+    
     # Perform matching and merging
     matched_count = 0
     for idx in people_df.index:

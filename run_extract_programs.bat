@@ -36,7 +36,7 @@ if not defined python_cmd (
 
 echo Starting program...
 echo.
-call %python_cmd% extract_programs.py
+call "%python_cmd%" extract_programs.py
 
 if errorlevel 1 (
     echo.

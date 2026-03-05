@@ -36,7 +36,7 @@ if not defined python_cmd (
     exit /b 1
 )
 
-call %python_cmd% generate_batch_xml.py
+call "%python_cmd%" generate_batch_xml.py
 
 if %errorlevel% neq 0 (
     echo.

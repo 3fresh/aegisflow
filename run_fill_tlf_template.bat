@@ -8,14 +8,11 @@ echo Fill TLF Template Tool
 echo ================================================================================
 echo.
 
-REM Get current script directory
-set script_dir=%~dp0
-
 REM Resolve Python executable (venv -> py -3.13 -> system python)
 set "python_cmd="
-if exist "%script_dir%.venv\Scripts\python.exe" (
-    "%script_dir%.venv\Scripts\python.exe" --version >nul 2>&1
-    if %errorlevel% equ 0 set "python_cmd=%script_dir%.venv\Scripts\python.exe"
+if exist ".venv\Scripts\python.exe" (
+    ".venv\Scripts\python.exe" --version >nul 2>&1
+    if %errorlevel% equ 0 set "python_cmd=.venv\Scripts\python.exe"
 )
 if not defined python_cmd (
     py -3.13 --version >nul 2>&1
@@ -41,7 +38,7 @@ if %errorlevel% neq 0 (
 )
 
 REM Run Python script
-call %python_cmd% "%script_dir%fill_tlf_template.py"
+call %python_cmd% fill_tlf_template.py
 
 REM Check return value
 if %errorlevel% neq 0 (

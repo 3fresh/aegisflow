@@ -109,8 +109,14 @@ Output File (people_management_with_status.xlsx)
 ### 1. MOSAIC_CONVERT功能
 - **CSV预处理**
   ```
-  脚注中的单引号 → 双引号
+  脚注中的 ''s 规范化 → 's
+  脚注中的单引号 → 双引号（仅首/末）
   标题和其他字段保持不变
+  ```
+- **title7 规则**
+  ```
+  当 title7 非空时：j=C ' → j=L '
+  保留原始值不做其他转换
   ```
   
 - **数据分组与去重**
@@ -120,7 +126,9 @@ Output File (people_management_with_status.xlsx)
 
 - **Excel格式化**
   - 字体：等线 (SimHei)
-  - 非Latin1字符：红色+绿色背景
+  - 非Latin1字符和 ''s 模式：红色+绿色背景
+  - 脚注空洞（最后非空前的空值）：绿色背景
+  - 不以"结尾的非空脚注：蓝色背景（质量警告）
   - 共享程序+后缀：黄色背景（31个组合）
 
 - **动态排序**
@@ -130,8 +138,13 @@ Output File (people_management_with_status.xlsx)
   ```
 
 ### 2. FILL_TLF_TEMPLATE功能
+- **输出命名**
+  ```
+  MOSAIC输出文件：Clinical Study Report_TiFo_MOSAIC_CONVERT_YYYYMMDD.xlsx
+  (自动添加执行日期后缀)
+  ```
 - **优化后的工作流**
-  - Step1: 文件选择（MOSAIC输出）
+  - Step1: 文件选择（MOSAIC输出，自动检测日期后缀）
   - Step2: 文件选择（people_management文件，无需选择模板）
   - Step3-4: 读取MOSAIC和people_management数据
   - Step5-6: 数据列映射和三级联动匹配

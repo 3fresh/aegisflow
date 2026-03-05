@@ -179,6 +179,7 @@ Note: You can open the Excel file directly to view results
 - Use pandas for data reading and processing
 - Use openpyxl to preserve Excel format and structure
 - Update only the target column; all other data is fully preserved
+- Convert `QC Status (Not Started, Ongoing, QC Pending, Fail, Pass)` to `object` dtype before merge, ensuring string values (Pass/Fail/etc.) can always be written safely
 
 ### Performance Metrics
 
@@ -207,6 +208,6 @@ If you encounter issues, please check:
 ---
 
 **Created**: February 11, 2026  
-**Version**: 1.0  
+**Version**: 1.1  
 **Status**: ✅ Production Ready
 **状态**: ✅ 生产就绪

@@ -1,6 +1,29 @@
 ```markdown
 # Changelog
 
+## Runtime and Formatting Updates (2026-03-05)
+
+### 🛠️ Script Behavior Updates
+
+- ✅ `fill_tlf_status.py`: force `QC Status (Not Started, Ongoing, QC Pending, Fail, Pass)` column to `object` dtype before merge, preventing type conflicts when writing string values
+- ✅ `mosaic_convert.py`: footnote preprocessing now additionally normalizes `''s` to `'s`
+- ✅ `mosaic_convert.py`: added `title7` post-processing rule to convert `j=C '` to `j=L '` when title7 is not empty
+- ✅ `mosaic_convert.py`: default output naming now uses date suffix format `<original_filename>_MOSAIC_CONVERT_YYYYMMDD.xlsx`
+
+### 🎨 Excel Marking Enhancements
+
+- ✅ Expanded red rich-text highlight scope from only non-latin1 characters to:
+  - non-latin1 characters
+  - `''s` pattern characters
+- ✅ Added green marking for empty footnote gaps (empty footnote cells before the last non-empty footnote in the same row)
+- ✅ Added blue background (`00B0F0`) warning for non-empty footnote cells that do not end with `"`
+
+### ⚙️ Launcher Robustness
+
+- ✅ Updated core `run_*.bat` launchers to invoke Python via quoted interpreter path (`call "%python_cmd%" ...`) for better path compatibility
+- ✅ `run_fill_tlf_template.bat` now consistently uses workspace-relative `.venv\Scripts\python.exe` detection and simplified script invocation
+- ✅ `run_mosaic_convert.bat` prompt text adjusted to generic validation wording
+
 ## AegisFlow Branding Unification (2026-02-26)
 
 ### 🎨 Documentation Brand Unification

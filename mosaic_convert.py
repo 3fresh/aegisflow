@@ -9,12 +9,15 @@ import os
 import tkinter as tk
 from tkinter import filedialog
 import re
+from datetime import datetime
 
 
 def preprocess_csv_data(df):
     """
-    Preprocess CSV data: replace ONLY first and last single quotes with double quotes
-    in 'value' column when 'parm' starts with 'footnote' (NOT title)
+    Preprocess CSV data: 
+    1. Replace ''s with 's
+    2. Replace ONLY first and last single quotes with double quotes
+       in 'value' column when 'parm' starts with 'footnote' (NOT title)
     Middle quotes are kept unchanged as per requirement.
     
     Parameters:
@@ -33,6 +36,9 @@ def preprocess_csv_data(df):
             return value
         
         value_str = str(value)
+        
+        # First, replace ''s with 's
+        value_str = value_str.replace("''s", "'s")
         
         # Find first single quote
         first_quote_pos = value_str.find("'")
@@ -225,6 +231,17 @@ def mosaic_convert(csv_file_path, output_file_path=None):
                 else x
             )
     
+    # Step 10b: Convert title7 j=C to j=L if not empty
+    if 'title7' in index_df.columns:
+        def convert_title7(value):
+            if pd.isna(value) or str(value).strip() == '':
+                return value
+            value_str = str(value)
+            # Replace j=C with j=L
+            value_str = value_str.replace("j=C '", "j=L '")
+            return value_str
+        index_df['title7'] = index_df['title7'].apply(convert_title7)
+    
     # Step 11: Reorder columns to match expected output
     final_columns = ['sect_num', 'sect_ttl', 'outtype', 'azsolid', 'tocnumber',
                      'Output Type (Table, Listing, Figure)', 'Title', 'PROGRAM', 'SUFFIX',
@@ -265,7 +282,8 @@ def mosaic_convert(csv_file_path, output_file_path=None):
     # Step 11: Save to Excel with formatting
     if output_file_path is None:
         base_name = os.path.splitext(csv_file_path)[0]
-        output_file_path = f"{base_name}_MOSAIC_CONVERT.xlsx"
+        date_suffix = datetime.now().strftime('%Y%m%d')
+        output_file_path = f"{base_name}_MOSAIC_CONVERT_{date_suffix}.xlsx"
     
     # Write to Excel
     with pd.ExcelWriter(output_file_path, engine='openpyxl') as writer:
@@ -280,25 +298,40 @@ def mosaic_convert(csv_file_path, output_file_path=None):
     wb = load_workbook(output_file_path)
     ws = wb['Index']
     
-    # Helper function to find non-latin1 character positions
-    def find_non_latin1_chars(text):
-        """Find positions of non-latin1 characters in text"""
+    # Helper function to find all characters that need red highlighting
+    def find_highlight_positions(text):
+        """Find positions of characters that need to be highlighted in red (non-latin1 and ''s)"""
         if pd.isna(text) or text == '':
             return []
         if not isinstance(text, str):
             return []
-        text_str = text
-        non_latin1_positions = []
-        for i, char in enumerate(text_str):
+        
+        positions = set()
+        
+        # Find non-latin1 characters
+        for i, char in enumerate(text):
             try:
                 char.encode('latin1')
             except UnicodeEncodeError:
-                non_latin1_positions.append(i)
-        return non_latin1_positions
+                positions.add(i)
+        
+        # Find ''s patterns (two single quotes followed by s)
+        apostrophe_s_pattern = "''s"
+        start = 0
+        while True:
+            pos = text.find(apostrophe_s_pattern, start)
+            if pos == -1:
+                break
+            positions.add(pos)      # first '
+            positions.add(pos + 1)  # second '
+            positions.add(pos + 2)  # s
+            start = pos + 1
+        
+        return sorted(list(positions))
     
-    def create_rich_text(text, non_latin1_positions):
-        """Create rich text with only non-latin1 characters in red"""
-        if not non_latin1_positions:
+    def create_rich_text(text, highlight_positions):
+        """Create rich text with specified positions highlighted in red"""
+        if not highlight_positions:
             return text
 
         if not isinstance(text, str):
@@ -311,11 +344,11 @@ def mosaic_convert(csv_file_path, output_file_path=None):
         default_inline = InlineFont(rFont='等线')
         red_inline = InlineFont(rFont='等线', color='FF0000')
         
-        for pos in non_latin1_positions:
-            # Add text before the non-latin1 char
+        for pos in highlight_positions:
+            # Add text before the highlighted char
             if pos > current_pos:
                 rich_text_parts.append(TextBlock(default_inline, text_str[current_pos:pos]))
-            # Add the non-latin1 char in red
+            # Add the highlighted char in red
             rich_text_parts.append(TextBlock(red_inline, text_str[pos]))
             current_pos = pos + 1
         
@@ -343,10 +376,41 @@ def mosaic_convert(csv_file_path, output_file_path=None):
     tocnum_col = col_indices.get('tocnumber')
     program_col = col_indices.get('PROGRAM')
     suffix_col = col_indices.get('SUFFIX')
+    footnote_cols = {col_indices[col] for col in index_final.columns if col.startswith('footnote')}
+    
+    # Identify footnote columns with gaps (empty cells before last non-empty footnote)
+    footnote_col_names = [col for col in index_final.columns if col.startswith('footnote')]
+    empty_footnote_cells = set()  # Set of (row_idx, col_idx) tuples for Excel coordinates
+    
+    for data_row_idx in range(len(index_final)):
+        # Get values for all footnote columns in this row
+        footnote_info = []
+        for col_name in footnote_col_names:
+            col_idx = col_indices[col_name]
+            value = index_final.loc[data_row_idx, col_name]
+            is_empty = pd.isna(value) or str(value).strip() == ''
+            footnote_info.append((col_idx, is_empty))
+        
+        # Find the last non-empty footnote column
+        last_non_empty_idx = -1
+        for i in range(len(footnote_info) - 1, -1, -1):
+            col_idx, is_empty = footnote_info[i]
+            if not is_empty:
+                last_non_empty_idx = i
+                break
+        
+        # Mark all empty footnote columns before the last non-empty one
+        if last_non_empty_idx > 0:
+            for i in range(last_non_empty_idx):
+                col_idx, is_empty = footnote_info[i]
+                if is_empty:
+                    # Excel row = data_row_idx + 2 (header is row 1, data starts at row 2)
+                    empty_footnote_cells.add((data_row_idx + 2, col_idx))
     
     # Define fill colors and fonts
     yellow_fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type='solid')
     green_fill = PatternFill(start_color='92D050', end_color='92D050', fill_type='solid')  # Light green
+    blue_fill = PatternFill(start_color='00B0F0', end_color='00B0F0', fill_type='solid')
     default_font = Font(name='等线')
     bold_font = Font(name='等线', bold=True)
     
@@ -367,15 +431,28 @@ def mosaic_convert(csv_file_path, output_file_path=None):
                 data_row_idx = row_idx - 2  # Convert to 0-based index for index_final
                 is_dup_prog_suff = data_row_idx in dup_rows
                 
-                # Find non-latin1 characters
-                non_latin1_positions = find_non_latin1_chars(cell_value)
-                has_non_latin1 = len(non_latin1_positions) > 0
+                # Find all characters that need red highlighting (non-latin1 and ''s)
+                text_value = '' if cell_value is None else str(cell_value)
+                highlight_positions = find_highlight_positions(text_value)
+                has_highlight_chars = len(highlight_positions) > 0
+
+                # Check if this is an empty footnote cell with a gap
+                is_empty_footnote_gap = (row_idx, col_idx) in empty_footnote_cells
+
+                # Footnote cells must end with a double quote
+                needs_quote_highlight = (
+                    col_idx in footnote_cols and text_value.strip() != '' and not text_value.rstrip().endswith('"')
+                )
                 
                 # Apply formatting based on conditions
-                if has_non_latin1:
-                    # Non-latin1: create rich text with only those chars in red, green background
-                    cell.value = create_rich_text(cell_value, non_latin1_positions)
+                if has_highlight_chars:
+                    # Has special chars: create rich text with those chars in red, green background
+                    cell.value = create_rich_text(text_value, highlight_positions)
                     cell.fill = green_fill
+                elif is_empty_footnote_gap:
+                    # Empty footnote with gap: green background
+                    cell.fill = green_fill
+                    cell.font = default_font
                 elif is_dup_prog_suff and col_idx in [program_col, suffix_col]:
                     # Duplicate PROGRAM+SUFFIX: yellow fill
                     cell.fill = yellow_fill
@@ -383,6 +460,9 @@ def mosaic_convert(csv_file_path, output_file_path=None):
                 else:
                     # Default: 等线 font
                     cell.font = default_font
+
+                if needs_quote_highlight:
+                    cell.fill = blue_fill
     
     # Freeze panes at H2
     ws.freeze_panes = 'H2'
@@ -473,7 +553,8 @@ if __name__ == "__main__":
     
     # Suggest default output name based on input file
     input_base = os.path.splitext(os.path.basename(input_file))[0]
-    default_output = f"{input_base}_MOSAIC_CONVERT.xlsx"
+    date_suffix = datetime.now().strftime('%Y%m%d')
+    default_output = f"{input_base}_MOSAIC_CONVERT_{date_suffix}"
     
     output_file = select_output_file(default_output)
     

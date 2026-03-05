@@ -27,7 +27,7 @@ if not defined python_cmd (
 
 echo [1] Checking CSV structure and performing seq transpose...
 echo.
-call %python_cmd% mosaic_convert.py
+call "%python_cmd%" mosaic_convert.py
 
 if errorlevel 1 (
     echo.
@@ -38,12 +38,12 @@ if errorlevel 1 (
 
 echo.
 echo.
-echo [2] Validating output file (249 rows expected)...
+echo [2] Validating output file...
 echo.
 
 REM Call Python script directly, let Python read .last_output.txt (avoid bat passing Chinese path)
 if exist ".last_output.txt" (
-    call %python_cmd% validate_output.py
+    call "%python_cmd%" validate_output.py
 ) else (
     echo WARN: Output file path not found, skipping validation
 )

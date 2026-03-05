@@ -1,4 +1,4 @@
-# Excel Formatting Guide (v2.5)
+# Excel Formatting Guide (v2.6)
 
 ## 📋 Overview
 
@@ -40,11 +40,21 @@ The Excel files output by MOSAIC_CONVERT now include comprehensive formatting an
 
 **Applied to**:
 - Cells containing non-Latin1 characters
+- Empty footnote gap cells (empty footnote cells before the last non-empty footnote in the same row)
 
 **Meaning**:
 - This cell contains character encoding issues
-- Problematic characters are highlighted in red
+- Problematic characters are highlighted in red (non-Latin1 or `''s` pattern)
 - Requires manual review and correction
+
+#### Blue Background (00B0F0)
+
+**Applied to**:
+- Non-empty footnote cells that do not end with a double quote (`"`)
+
+**Meaning**:
+- Footnote text may not follow expected quote-closing format
+- Requires manual review to confirm final quote closure
 
 **Example**:
 - "Primary Endpoint - Progression" (green background, "-" in red)
@@ -59,6 +69,7 @@ The Excel files output by MOSAIC_CONVERT now include comprehensive formatting an
 
 **Applied to**:
 - Non-Latin1 characters (individual character only)
+- `''s` pattern characters (both `'` and `s` positions)
 
 **Meaning**:
 - Marks specific characters with encoding issues
@@ -122,15 +133,25 @@ Example (program=t_dm, suffix=dischar_itt):
 - 14.1.9.3 (Yellow)
 ```
 
-### Correcting Non-Latin1 Characters
+### Correcting Highlighted Characters
 
 **Scenario**: Found a cell with green background
 
 ```
 1. Locate the green cell
-2. View the red character
+2. View the red character(s)
 3. Perform replacement according to the table above
 4. Re-import or manually correct
+```
+
+### Checking Blue Footnote Warnings
+
+**Scenario**: Found a footnote cell with blue background
+
+```
+1. Open the corresponding footnote text
+2. Confirm the content should end with a double quote (")
+3. If missing, fix source data and regenerate output
 ```
 
 ## 📝 Data Statistics
@@ -238,6 +259,6 @@ For formatting-related questions, please refer to:
 
 ---
 
-**Version**: 2.5  
+**Version**: 2.6  
 **Date**: 2026-02-10  
-**Last Updated**: Added numeric sorting and rich text formatting
+**Last Updated**: Added blue footnote quote warning and footnote gap marking
