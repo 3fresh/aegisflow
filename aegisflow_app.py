@@ -557,7 +557,7 @@ class AegisFlowApp(ctk.CTk):
                      font=("", 12, "bold"),
                      text_color=("#374151", "#94a3b8")).pack(side="left")
         ctk.CTkButton(bar, text="Clear", width=58, height=24, font=("", 11),
-                      fg_color=("transparent", "transparent"),
+                      fg_color="transparent",
                       text_color=("#9ca3af", "#64748b"),
                       hover_color=("#f3f4f6", "#1e293b"),
                       command=self.log_clear).pack(side="right")
