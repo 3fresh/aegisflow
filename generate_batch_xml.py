@@ -613,6 +613,57 @@ def interactive_mode():
         traceback.print_exc()
 
 
+def run_from_gui(input_file, header_text, output_filename, file_location, start_number, output_path):
+    """
+    Run XML generation with all parameters pre-supplied (called from the GUI).
+
+    Parameters
+    ----------
+    input_file      : str  Path to the source Excel/CSV file.
+    header_text     : str  Text for <header> element.
+    output_filename : str  PDF filename (no spaces, no extension).
+    file_location   : str  Path prefix used inside the XML for file elements.
+    start_number    : int  Starting page number (default 2).
+    output_path     : str  Full destination path for the output XML file.
+    """
+    print("=" * 70)
+    print("  Generate Batch List XML from Excel")
+    print("=" * 70)
+
+    generator = XMLGenerator()
+
+    print(f"[1/4] Loading input file: {os.path.basename(input_file)}")
+    try:
+        generator.load_excel(input_file)
+    except Exception as e:
+        print(f"❌ Error loading file: {e}")
+        import traceback
+        traceback.print_exc()
+        return
+
+    print(f"[2/4] Header      : {header_text}")
+    print(f"      PDF filename : {output_filename}")
+    print(f"      File location: {file_location}")
+    print(f"      Start number : {start_number}")
+    print(f"[3/4] Generating XML...")
+
+    try:
+        output_file = generator.generate_xml(
+            header_text=header_text,
+            file_location=file_location,
+            output_path=output_path,
+            output_filename=output_filename,
+            start_number=start_number
+        )
+        print("=" * 70)
+        print("✓ Operation completed successfully!")
+        print(f"\nGenerated file: {output_file}")
+    except Exception as e:
+        print(f"\n✗ Generation failed: {e}")
+        import traceback
+        traceback.print_exc()
+
+
 def main():
     """Main function"""
     import sys

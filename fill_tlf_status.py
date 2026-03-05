@@ -81,35 +81,42 @@ def save_file(title, default_filename, file_types):
     return file_path if file_path else None
 
 
-def fill_tlf_status():
-    """Main program: Merge Comparison Status from TFL Status to QC Status column in People Management"""
+def fill_tlf_status(people_file=None, status_file=None, output_file=None):
+    """Main program: Merge Comparison Status from TFL Status to QC Status column in People Management
+
+    Parameters (all optional — if omitted, file dialogs are shown):
+    ----------------------------------------------------------------
+    people_file : str | None  Path to people_management Excel (.xlsx)
+    status_file : str | None  Path to tfl_status Excel (.xlsx)
+    output_file : str | None  Path for the saved output Excel (.xlsx)
+    """
     
     print("=" * 80)
     print("TLF Status Filler - Fill TLF Status")
     print("=" * 80)
     
     # Step 1: Select people_management file
-    print("\n[1] Please select the modified people_management.xlsx file...")
-    people_file = select_file(
-        "Select people_management.xlsx file",
-        [("Excel files", "*.xlsx"), ("All files", "*.*")]
-    )
-    if not people_file:
-        print("❌ No people_management file selected, exiting program")
-        return False
-    
+    if people_file is None:
+        print("\n[1] Please select the modified people_management.xlsx file...")
+        people_file = select_file(
+            "Select people_management.xlsx file",
+            [("Excel files", "*.xlsx"), ("All files", "*.*")]
+        )
+        if not people_file:
+            print("❌ No people_management file selected, exiting program")
+            return False
     print(f"✓ People Management file: {people_file}")
     
     # Step 2: Select tfl_status file
-    print("\n[2] Please select the tfl_status.xlsx file...")
-    status_file = select_file(
-        "Select tfl_status.xlsx file",
-        [("Excel files", "*.xlsx"), ("All files", "*.*")]
-    )
-    if not status_file:
-        print("❌ No tfl_status file selected, exiting program")
-        return False
-    
+    if status_file is None:
+        print("\n[2] Please select the tfl_status.xlsx file...")
+        status_file = select_file(
+            "Select tfl_status.xlsx file",
+            [("Excel files", "*.xlsx"), ("All files", "*.*")]
+        )
+        if not status_file:
+            print("❌ No tfl_status file selected, exiting program")
+            return False
     print(f"✓ TFL Status file: {status_file}")
     
     # Step 3: Read people_management file
@@ -328,16 +335,16 @@ def fill_tlf_status():
             ws_tlf.cell(row=data_row_idx, column=qc_col_idx).value = value
         
         # Step 9: User selects save location
-        print("\n[9] Please select output file save location...")
-        output_file = save_file(
-            "Save output file",
-            "people_management_with_status.xlsx",
-            [("Excel files", "*.xlsx"), ("All files", "*.*")]
-        )
-        
-        if not output_file:
-            print("❌ No save location selected, exiting program")
-            return False
+        if output_file is None:
+            print("\n[9] Please select output file save location...")
+            output_file = save_file(
+                "Save output file",
+                "people_management_with_status.xlsx",
+                [("Excel files", "*.xlsx"), ("All files", "*.*")]
+            )
+            if not output_file:
+                print("❌ No save location selected, exiting program")
+                return False
         
         # Save file
         print(f"  - Saving file to: {output_file}")

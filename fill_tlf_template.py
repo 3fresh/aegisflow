@@ -79,34 +79,41 @@ def save_file(title, default_filename, file_types):
     return file_path if file_path else None
 
 
-def fill_tlf_template():
-    """Main program: Merge MOSAIC data into people_management file"""
+def fill_tlf_template(mosaic_file=None, people_file=None, output_file=None):
+    """Main program: Merge MOSAIC data into people_management file
+
+    Parameters (all optional — if omitted, file dialogs are shown):
+    ----------------------------------------------------------------
+    mosaic_file  : str | None  Path to MOSAIC_CONVERT output Excel (.xlsx)
+    people_file  : str | None  Path to people_management Excel (.xlsx)
+    output_file  : str | None  Path for the saved output Excel (.xlsx)
+    """
     
     print("=" * 80)
     print("TLF Template Filler - Fill TLF Template")
     print("=" * 80)
     
     # Step 1: Select input file
-    print("\n[1] Please select MOSAIC_CONVERT output Excel file...")
-    mosaic_file = select_file(
-        "Select MOSAIC_CONVERT Output Excel File",
-        [("Excel files", "*.xlsx"), ("All files", "*.*")]
-    )
-    if not mosaic_file:
-        print("❌ No MOSAIC_CONVERT file selected, program exiting")
-        return False
-    
+    if mosaic_file is None:
+        print("\n[1] Please select MOSAIC_CONVERT output Excel file...")
+        mosaic_file = select_file(
+            "Select MOSAIC_CONVERT Output Excel File",
+            [("Excel files", "*.xlsx"), ("All files", "*.*")]
+        )
+        if not mosaic_file:
+            print("❌ No MOSAIC_CONVERT file selected, program exiting")
+            return False
     print(f"✓ MOSAIC_CONVERT file: {mosaic_file}")
     
-    print("\n[2] Please select people_management.xlsx file...")
-    people_file = select_file(
-        "Select people_management.xlsx",
-        [("Excel files", "*.xlsx"), ("All files", "*.*")]
-    )
-    if not people_file:
-        print("❌ No people_management file selected, program exiting")
-        return False
-    
+    if people_file is None:
+        print("\n[2] Please select people_management.xlsx file...")
+        people_file = select_file(
+            "Select people_management.xlsx",
+            [("Excel files", "*.xlsx"), ("All files", "*.*")]
+        )
+        if not people_file:
+            print("❌ No people_management file selected, program exiting")
+            return False
     print(f"✓ People Management file: {people_file}")
     
     # Step 2: Read MOSAIC_CONVERT output
@@ -303,16 +310,16 @@ def fill_tlf_template():
                     ws_target.cell(row=excel_row, column=col_idx).fill = green_fill
         
         # Step 7: User selects save location
-        print("\n[8] Please select output file save location...")
-        output_file = save_file(
-            "Save Output File",
-            "people_management_updated.xlsx",
-            [("Excel files", "*.xlsx"), ("All files", "*.*")]
-        )
-        
-        if not output_file:
-            print("❌ No save location selected, program exiting")
-            return False
+        if output_file is None:
+            print("\n[8] Please select output file save location...")
+            output_file = save_file(
+                "Save Output File",
+                "people_management_updated.xlsx",
+                [("Excel files", "*.xlsx"), ("All files", "*.*")]
+            )
+            if not output_file:
+                print("❌ No save location selected, program exiting")
+                return False
         
         # Save file
         print(f"  - Saving file to: {output_file}")
