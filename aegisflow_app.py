@@ -37,6 +37,9 @@ except ImportError as exc:
 ctk.set_appearance_mode("System")
 ctk.set_default_color_theme("blue")
 
+FONT_FAMILY = "Segoe UI"   # clean Windows system font
+FONT_MONO   = "Consolas"   # monospace for log output
+
 TOOL_DEFS = [
     {"id": "mosaic",   "icon": "🔄", "name": "MOSAIC Convert",     "desc": "Convert TiFo CSV → formatted Excel"},
     {"id": "template", "icon": "📊", "name": "Fill TLF Template",  "desc": "Merge MOSAIC output with People Management"},
@@ -104,17 +107,17 @@ class FileInputRow(ctk.CTkFrame):
         self._var = ctk.StringVar()
 
         label_w = ctk.CTkLabel(self, text=label, width=175, anchor="w",
-                               font=("", 12), text_color=("#374151", "#cbd5e1"))
+                               font=(FONT_FAMILY, 12), text_color=("#374151", "#cbd5e1"))
         label_w.grid(row=0, column=0, sticky="w", padx=(0, 10))
 
         self._entry = ctk.CTkEntry(self, textvariable=self._var,
                                    placeholder_text=placeholder,
-                                   height=34, font=("", 12))
+                                   height=34, font=(FONT_FAMILY, 12))
         self._entry.grid(row=0, column=1, sticky="ew", padx=(0, 8))
 
         btn_txt = "Save As…" if save_mode else "Browse…"
         ctk.CTkButton(self, text=btn_txt, width=96, height=34,
-                      font=("", 11),
+                      font=(FONT_FAMILY, 11),
                       fg_color=("#e2e8f0", "#334155"),
                       text_color=("#374151", "#e2e8f0"),
                       hover_color=("#cbd5e1", "#475569"),
@@ -157,13 +160,62 @@ class SectionCard(ctk.CTkFrame):
         return self._inner
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-#  Base Tool Panel
+# ═══════════════════════════════════════════════════════════════════════════#  Info Accordion Card
+# ═══════════════════════════════════════════════════════════════════════
+
+class InfoCard(ctk.CTkFrame):
+    """Collapsible ‘About this Tool’ accordion shown below the panel header."""
+
+    def __init__(self, parent, content: str, **kw):
+        super().__init__(parent,
+                         fg_color=("#eff6ff", "#0c1f3a"),
+                         corner_radius=10, **kw)
+        self._expanded = False
+
+        self._toggle_btn = ctk.CTkButton(
+            self,
+            text="ℹ️  About this Tool  ▼",
+            anchor="w",
+            height=36,
+            font=(FONT_FAMILY, 12),
+            fg_color="transparent",
+            text_color=("#2563eb", "#60a5fa"),
+            hover_color=("#dbeafe", "#1e3a5f"),
+            corner_radius=8,
+            command=self._toggle,
+        )
+        self._toggle_btn.pack(fill="x", padx=6, pady=(4, 2))
+
+        self._body = ctk.CTkTextbox(
+            self,
+            font=(FONT_FAMILY, 11),
+            fg_color="transparent",
+            text_color=("#374151", "#9ca3af"),
+            wrap="word",
+            state="normal",
+            height=230,
+        )
+        self._body.insert("1.0", content)
+        self._body.configure(state="disabled")
+        # hidden by default; user clicks to expand
+
+    def _toggle(self):
+        if self._expanded:
+            self._body.pack_forget()
+            self._toggle_btn.configure(text="ℹ️  About this Tool  ▼")
+        else:
+            self._body.pack(fill="x", padx=14, pady=(0, 10))
+            self._toggle_btn.configure(text="ℹ️  About this Tool  ▲")
+        self._expanded = not self._expanded
+
+
+# ═══════════════════════════════════════════════════════════════════════#  Base Tool Panel
 # ═══════════════════════════════════════════════════════════════════════════
 
 class ToolPanel(ctk.CTkFrame):
-    title = ""
-    subtitle = ""
+    title     = ""
+    subtitle  = ""
+    info_text = ""   # override in subclasses to show InfoCard
 
     def __init__(self, parent, app, **kw):
         super().__init__(parent, fg_color="transparent", **kw)
@@ -174,11 +226,13 @@ class ToolPanel(ctk.CTkFrame):
 
     def _build_header(self):
         ctk.CTkLabel(self, text=self.title,
-                     font=("", 20, "bold"),
+                     font=(FONT_FAMILY, 20, "bold"),
                      text_color=("#111827", "#f1f5f9")).pack(anchor="w", pady=(0, 2))
         ctk.CTkLabel(self, text=self.subtitle,
-                     font=("", 12),
-                     text_color=("#6b7280", "#9ca3af")).pack(anchor="w", pady=(0, 18))
+                     font=(FONT_FAMILY, 12),
+                     text_color=("#6b7280", "#9ca3af")).pack(anchor="w", pady=(0, 8))
+        if self.info_text:
+            InfoCard(self, self.info_text).pack(fill="x", pady=(0, 14))
 
     def _build_inputs(self):
         """Override in subclass to add SectionCard(s)."""
@@ -188,7 +242,7 @@ class ToolPanel(ctk.CTkFrame):
             self,
             text="▶   Run",
             height=44,
-            font=("", 15, "bold"),
+            font=(FONT_FAMILY, 15, "bold"),
             command=self._start_run,
         )
         self.run_btn.pack(fill="x", pady=(16, 4))
@@ -225,6 +279,30 @@ class ToolPanel(ctk.CTkFrame):
 class MosaicPanel(ToolPanel):
     title    = "MOSAIC Convert"
     subtitle = "Convert TiFo CSV to formatted Excel with full Index + Original sheets"
+    info_text = (
+        "📥  Input File\n"
+        "  • Format   : CSV (.csv) — exported from TiFo / MOSAIC\n"
+        "  • Key columns (case-sensitive): TocNumber, Title, Output, Type,\n"
+        "    Programs, Developer, QC Programmer, QC Date, QC Status\n\n"
+        "📤  Output File  (Excel .xlsx with 2 sheets)\n"
+        "  • \"Index\" sheet    — formatted master TOC with colour-coded rows\n"
+        "  • \"Original\" sheet — raw source data preserved as-is\n\n"
+        "🎨  Highlight Colours  (\"Index\" sheet)\n"
+        "  • Green  (✅) — row has a valid, non-placeholder output filename\n"
+        "  • Yellow (⚠️) — output filename is blank or contains \"XXXX\"\n"
+        "  • Red    (❌) — duplicate TocNumber detected in source data\n"
+        "  • No fill — standard row\n\n"
+        "📋  Log Checks\n"
+        "  • Missing required columns → lists which ones are absent\n"
+        "  • Duplicate TocNumber values → reports all affected rows\n"
+        "  • Rows with empty or placeholder Output field\n"
+        "  • Final row count and output file path\n\n"
+        "⚠  Notes\n"
+        "  • If \"Output XLSX\" is left blank, a name like\n"
+        "    output_MOSAIC_CONVERT_YYYY-MM-DD.xlsx is auto-created\n"
+        "    in the same folder as the input CSV.\n"
+        "  • Column names in the CSV must match exactly (case-sensitive)."
+    )
 
     def _build_inputs(self):
         card = SectionCard(self)
@@ -255,6 +333,32 @@ class MosaicPanel(ToolPanel):
 class TemplatePanel(ToolPanel):
     title    = "Fill TLF Template"
     subtitle = "Merge MOSAIC output with People Management — three-tier cascading match"
+    info_text = (
+        "📥  Input Files\n"
+        "  • MOSAIC XLSX  — output from the MOSAIC Convert tool\n"
+        "                   (the \"Index\" sheet is read automatically)\n"
+        "  • People Mgmt  — existing People Management workbook to be updated\n\n"
+        "📤  Output File  (Excel .xlsx)\n"
+        "  • Same structure as People Mgmt, with Programmer / QC Programmer\n"
+        "    columns populated from MOSAIC data\n\n"
+        "🔗  Three-Tier Matching Logic\n"
+        "  Tier 1 : Exact match on TocNumber\n"
+        "  Tier 2 : Fuzzy match on Output filename (removes date suffixes)\n"
+        "  Tier 3 : Title-based fuzzy match (last resort)\n\n"
+        "🎨  Highlight Colours  (output sheet)\n"
+        "  • Blue   — filled by Tier 1 (exact TocNumber match)\n"
+        "  • Green  — filled by Tier 2 (filename fuzzy match)\n"
+        "  • Yellow — filled by Tier 3 (title fuzzy match)\n"
+        "  • Red    — no match found; row flagged and left blank\n\n"
+        "📋  Log Checks\n"
+        "  • Reports the match tier used for every row\n"
+        "  • Lists all rows that could not be matched\n"
+        "  • Warns if People Mgmt is missing expected column headers\n"
+        "  • Final match-rate summary (e.g. \"142 / 150 rows matched\")\n\n"
+        "⚠  Notes\n"
+        "  • The MOSAIC XLSX must be the direct output of the MOSAIC Convert step.\n"
+        "  • Do NOT rename columns in the People Mgmt file between runs."
+    )
 
     def _build_inputs(self):
         card = SectionCard(self)
@@ -290,6 +394,30 @@ class TemplatePanel(ToolPanel):
 class StatusPanel(ToolPanel):
     title    = "Fill TLF Status"
     subtitle = "Merge QC Status from TFL Status file (Match→Pass, Mismatch→Fail)"
+    info_text = (
+        "📥  Input Files\n"
+        "  • People Mgmt XLSX  — output from the Fill TLF Template step\n"
+        "  • TFL Status XLSX   — QC status tracking file from the QC team\n\n"
+        "📤  Output File  (Excel .xlsx)\n"
+        "  • People Mgmt with a new \"QC Status\" column fully populated\n\n"
+        "🔗  Matching Logic\n"
+        "  Match key   : Output filename (normalised, case-insensitive)\n"
+        "  Match + agree  → \"Pass\"  (green highlight)\n"
+        "  Match + differ → \"Fail\"  (red highlight)\n"
+        "  No match       → cell left blank (no highlight)\n\n"
+        "🎨  Highlight Colours  (QC Status column)\n"
+        "  • Green — Pass: programmer status and QC reviewer status agree\n"
+        "  • Red   — Fail: statuses differ, manual review required\n"
+        "  • No fill — output filename not found in TFL Status file\n\n"
+        "📋  Log Checks\n"
+        "  • Key column detection in both input files\n"
+        "  • Reports unmatched rows from People Mgmt\n"
+        "  • Reports TFL Status rows that matched nothing in People Mgmt\n"
+        "  • Final summary: Pass count, Fail count, unmatched count\n\n"
+        "⚠  Notes\n"
+        "  • Run this tool AFTER Fill TLF Template, not before.\n"
+        "  • Column names in the TFL Status file must match the expected schema."
+    )
 
     def _build_inputs(self):
         card = SectionCard(self)
@@ -325,6 +453,25 @@ class StatusPanel(ToolPanel):
 class ExtractPanel(ToolPanel):
     title    = "Extract Programs"
     subtitle = "Extract SAS %runpgm script ordered by first appearance in MOSAIC Excel"
+    info_text = (
+        "📥  Input File\n"
+        "  • MOSAIC XLSX — output from the MOSAIC Convert tool\n"
+        "    (reads the \"Index\" sheet; looks for a \"Programs\" column)\n\n"
+        "📤  Output File  (.txt)\n"
+        "  • A plain-text SAS script with one %runpgm() call per program,\n"
+        "    ordered by first appearance (TocNumber order) in the spreadsheet\n"
+        "  • Duplicate program names are automatically de-duplicated\n\n"
+        "📋  Log Checks\n"
+        "  • Warns if the \"Programs\" column is missing or entirely empty\n"
+        "  • Reports total unique programs extracted\n"
+        "  • Lists any rows where the Programs cell is blank\n"
+        "  • Final line count in the generated script\n\n"
+        "⚠  Notes\n"
+        "  • Each Programs cell may contain multiple programme names separated\n"
+        "    by commas, semicolons, or line breaks — all formats are handled.\n"
+        "  • The output .txt file is UTF-8 encoded; open in SAS EG or any\n"
+        "    plain-text editor."
+    )
 
     def _build_inputs(self):
         card = SectionCard(self)
@@ -356,6 +503,30 @@ class ExtractPanel(ToolPanel):
 class XMLPanel(ToolPanel):
     title    = "Generate Batch XML"
     subtitle = "Generate Adobe PDF Builder batch list XML from Excel/CSV"
+    info_text = (
+        "📥  Input File\n"
+        "  • Excel (.xlsx / .xls) or CSV (.csv)\n"
+        "  • Required: a column containing PDF output filenames\n"
+        "    (auto-detected from common names: Output, Filename, File)\n\n"
+        "📤  Output File  (.xml)\n"
+        "  • Adobe PDF Builder batch list XML\n"
+        "  • One <batchitem> entry per row, with sequential page numbers\n\n"
+        "⚙️  Parameters\n"
+        "  • Header Text       — label in the batch PDF cover header\n"
+        "  • Output PDF Name   — base name of the assembled PDF (no spaces)\n"
+        "  • File Location     — SAS-style path to PDF source files\n"
+        "                        e.g.  root/cdar/.../output/\n"
+        "  • Start Page Number — page number assigned to the first item\n\n"
+        "📋  Log Checks\n"
+        "  • Skips rows where Output filename is blank\n"
+        "  • Warns if Output PDF Name contains spaces (invalid for Adobe)\n"
+        "  • Validates Start Page Number is a positive integer\n"
+        "  • Reports total items written to XML\n\n"
+        "⚠  Notes\n"
+        "  • Open the output XML in Acrobat Pro via\n"
+        "    Document > Combine Files (Batch PDF Builder plugin).\n"
+        "  • File Location must use forward slashes (/), not backslashes."
+    )
 
     def _build_inputs(self):
         # ── File inputs ────────────────────────────────────────────────────
@@ -393,9 +564,9 @@ class XMLPanel(ToolPanel):
         self._param_entries = []
         for i, (lbl, ph) in enumerate(fields):
             ctk.CTkLabel(g, text=lbl, width=175, anchor="w",
-                         font=("", 12), text_color=("#374151", "#cbd5e1")
+                         font=(FONT_FAMILY, 12), text_color=("#374151", "#cbd5e1")
                          ).grid(row=i, column=0, sticky="w", padx=(0, 10), pady=4)
-            entry = ctk.CTkEntry(g, placeholder_text=ph, height=34, font=("", 12))
+            entry = ctk.CTkEntry(g, placeholder_text=ph, height=34, font=(FONT_FAMILY, 12))
             entry.grid(row=i, column=1, sticky="ew", pady=4)
             self._param_entries.append((entry, ph))
 
@@ -477,14 +648,14 @@ class AegisFlowApp(ctk.CTk):
         brand = ctk.CTkFrame(sb, fg_color="transparent")
         brand.pack(fill="x", padx=18, pady=(28, 6))
         ctk.CTkLabel(brand, text="⚡ AegisFlow",
-                     font=("", 21, "bold"),
+                     font=(FONT_FAMILY, 21, "bold"),
                      text_color="#f8fafc").pack(anchor="w")
         ctk.CTkLabel(brand, text="Transform · Validate · Deliver",
-                     font=("", 10),
+                     font=(FONT_FAMILY, 10),
                      text_color="#475569").pack(anchor="w", pady=(2, 0))
 
         ctk.CTkFrame(sb, height=1, fg_color="#334155").pack(fill="x", padx=18, pady=14)
-        ctk.CTkLabel(sb, text="T O O L S", font=("", 9, "bold"),
+        ctk.CTkLabel(sb, text="T O O L S", font=(FONT_FAMILY, 9, "bold"),
                      text_color="#475569").pack(anchor="w", padx=22, pady=(0, 6))
 
         for t in TOOL_DEFS:
@@ -493,7 +664,7 @@ class AegisFlowApp(ctk.CTk):
                 text=f"  {t['icon']}  {t['name']}",
                 anchor="w",
                 height=44,
-                font=("", 13),
+                font=(FONT_FAMILY, 13),
                 fg_color="transparent",
                 text_color="#94a3b8",
                 hover_color="#1e3a5f",
@@ -508,13 +679,13 @@ class AegisFlowApp(ctk.CTk):
             fill="x", padx=18, side="bottom", pady=(0, 6))
         self._mode_btn = ctk.CTkButton(
             sb, text="🌙  Dark Mode", anchor="w",
-            height=36, font=("", 11),
+            height=36, font=(FONT_FAMILY, 11),
             fg_color="transparent", text_color="#64748b",
             hover_color="#1e293b", corner_radius=8,
             command=self._toggle_mode)
         self._mode_btn.pack(side="bottom", fill="x", padx=10, pady=4)
 
-        ver = ctk.CTkLabel(sb, text="v 2026-03", font=("", 10), text_color="#334155")
+        ver = ctk.CTkLabel(sb, text="v 2026-03", font=(FONT_FAMILY, 10), text_color="#334155")
         ver.pack(side="bottom", pady=(0, 4))
 
     def _build_content(self):
@@ -554,9 +725,9 @@ class AegisFlowApp(ctk.CTk):
         bar = ctk.CTkFrame(log_frame, fg_color="transparent")
         bar.pack(fill="x", padx=16, pady=(8, 2))
         ctk.CTkLabel(bar, text="📋  Log Output",
-                     font=("", 12, "bold"),
+                     font=(FONT_FAMILY, 12, "bold"),
                      text_color=("#374151", "#94a3b8")).pack(side="left")
-        ctk.CTkButton(bar, text="Clear", width=58, height=24, font=("", 11),
+        ctk.CTkButton(bar, text="Clear", width=58, height=24, font=(FONT_FAMILY, 11),
                       fg_color="transparent",
                       text_color=("#9ca3af", "#64748b"),
                       hover_color=("#f3f4f6", "#1e293b"),
@@ -564,7 +735,7 @@ class AegisFlowApp(ctk.CTk):
 
         self._log_box = ctk.CTkTextbox(
             log_frame,
-            font=("Consolas", 11),
+            font=(FONT_MONO, 11),
             fg_color="transparent",
             text_color=("#1e293b", "#d1d5db"),
             wrap="word",
@@ -583,12 +754,12 @@ class AegisFlowApp(ctk.CTk):
         if self._cur_id:
             self._panels[self._cur_id].grid_remove()
             self._nav_btns[self._cur_id].configure(
-                fg_color="transparent", text_color="#94a3b8", font=("", 13))
+                fg_color="transparent", text_color="#94a3b8", font=(FONT_FAMILY, 13))
 
         self._cur_id = tool_id
         self._panels[tool_id].grid()
         self._nav_btns[tool_id].configure(
-            fg_color="#1e3a5f", text_color="#60a5fa", font=("", 13, "bold"))
+            fg_color="#1e3a5f", text_color="#60a5fa", font=(FONT_FAMILY, 13, "bold"))
 
     def log_clear(self):
         self._log_box.configure(state="normal")
