@@ -205,6 +205,8 @@ def mosaic_convert(csv_file_path, output_file_path=None):
         if pd.isna(title_val) or title_val == '' or title_val == 'None':
             return ''
         title_str = str(title_val)
+        # Normalize double-apostrophes (e.g. Investigator''s -> Investigator's)
+        title_str = title_str.replace("''", "'")
         # Remove "j=C '" from start and "' " from end if present
         if title_str.startswith("j=C '") and title_str.endswith("' "):
             return title_str[5:-2]
@@ -241,6 +243,26 @@ def mosaic_convert(csv_file_path, output_file_path=None):
             value_str = value_str.replace("j=C '", "j=L '")
             return value_str
         index_df['title7'] = index_df['title7'].apply(convert_title7)
+    
+    # Step 10c: Normalize title5 - convert '' to ', then re-wrap with j=C '' ... '' delimiters
+    if 'title5' in index_df.columns:
+        def normalize_title5(value):
+            if pd.isna(value) or str(value).strip() == '':
+                return value
+            value_str = str(value)
+            # Normalize double-apostrophes first
+            value_str = value_str.replace("''", "'")
+            # Re-wrap SAS delimiters: j=C '...' (with or without trailing space) -> j=C ''...''
+            if value_str.startswith("j=C '") and value_str.endswith("' "):
+                inner = value_str[5:-2]
+                return f"j=C ''{inner}''"
+            elif value_str.startswith("j=C '"):
+                inner = value_str[5:]
+                if inner.endswith("'"):
+                    inner = inner[:-1]
+                return f"j=C ''{inner}''"
+            return value_str
+        index_df['title5'] = index_df['title5'].apply(normalize_title5)
     
     # Step 11: Reorder columns to match expected output
     final_columns = ['sect_num', 'sect_ttl', 'outtype', 'azsolid', 'tocnumber',

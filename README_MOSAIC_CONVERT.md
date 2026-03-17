@@ -31,6 +31,10 @@ This script implements all functionality of the original VBA macro and adds mult
 
 ## Key Improvements
 
+### v3.3 - title5 Double-Apostrophe Normalization (2026-03-17)
+- ✅ **Title Extraction Fix**: `''` in `title5` values normalized to `'` before stripping SAS delimiters — `Title` column now contains clean text (e.g. `Investigator's Brochure` instead of `Investigator''s Brochure`)
+- ✅ **title5 SAS Delimiter Update**: Output `title5` column now uses `j=C ''...''` style delimiters (no trailing space), replacing the old `j=C '...' ` style
+
 ### v3.2 - Footnote Rules and Output Naming Enhancements
 - ✅ **Footnote Text Normalization**: Replace `''s` with `'s` during footnote preprocessing
 - ✅ **title7 Rule Enhancement**: Convert `j=C '` to `j=L '` when `title7` is not empty

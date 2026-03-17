@@ -1,6 +1,14 @@
 ```markdown
 # Changelog
 
+## mosaic_convert v3.3 - title5 Normalization (2026-03-17)
+
+### 🛠️ title5 Processing Updates
+
+- ✅ `mosaic_convert.py`: `extract_title()` now normalizes `''` to `'` before stripping SAS prefix/suffix, producing clean Title text (e.g. `Investigator's Brochure` instead of `Investigator''s Brochure`)
+- ✅ `mosaic_convert.py`: new Step 10c normalizes `title5` column in output — `''` converted to `'`, and SAS delimiters re-wrapped from `j=C '...' ` (single-quote + trailing space) to `j=C ''...''` (double-single-quote, no trailing space)
+- ✅ `run_mosaic_convert.bat`: version banner updated to v3.3
+
 ## Runtime and Formatting Updates (2026-03-05)
 
 ### 🛠️ Script Behavior Updates
