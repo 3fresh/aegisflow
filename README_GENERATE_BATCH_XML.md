@@ -213,7 +213,7 @@ Before generating XML, the tool checks whether all text contains only latin1 cha
   - Ask whether to continue
 
 **Common non-latin1 characters**:
-- Chinese characters: such as "分析"
+- Chinese characters: such as "fenxi" (analysis)
 - Special symbols: ≥, ≤, —, ±, °, μ, etc.
 - Non-ASCII quotes: " " ' '
 

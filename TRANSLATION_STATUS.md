@@ -13,12 +13,12 @@ All Python source files have been fully translated from Chinese to English:
 2. **extract_programs.py** (262 lines)
    - Status: ✅ 100% Complete
    - Translated: All docstrings, print statements, user prompts, statistics output
-   - Key changes: "读取数据" → "Reading data", "提取程序" → "Extracting programs"
+   - Key changes: "du qu shu ju" → "Reading data", "ti qu cheng xu" → "Extracting programs"
 
 3. **mosaic_convert.py** (511 lines)
    - Status: ✅ 100% Complete  
    - Translated: Critical user-facing messages, error output, processing status
-   - Key changes: "正在预处理数据" → "Preprocessing data", Font "等线" → "DengXian"
+   - Key changes: "zheng zai yu chu li shu ju" → "Preprocessing data", Font updated to "DengXian"
 
 4. **generate_batch_xml.py** (642 lines)
    - Status: ✅ 100% Complete
@@ -33,7 +33,7 @@ All Python source files have been fully translated from Chinese to English:
 6. **validate_output.py** (150 lines)
    - Status: ✅ 100% Complete
    - Translated: Validation messages, data quality checks, error reporting
-   - Key changes: "验证文件" → "Validating file", "数据质量检查" → "Data quality check"
+   - Key changes: "yan zheng wen jian" → "Validating file", "shu ju zhi liang jian cha" → "Data quality check"
 
 ---
 

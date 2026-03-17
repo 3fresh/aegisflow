@@ -18,7 +18,7 @@ This script implements all functionality of the original VBA macro and adds mult
 6. **Title Extraction**: Extract clean title text from title5 field
 7. **CSV Preprocessing**: In footnote values, normalize `''s` to `'s`, then replace only first and last single quotes with double quotes (keep title unchanged)
 8. **Excel Formatting**: 
-   - All fonts using "等线" series
+   - All fonts using "DengXian" series
    - Create Index and Original worksheets
    - Header row in bold
    - Columns H, I, J with yellow background
@@ -155,7 +155,7 @@ Contains the following columns:
 - title1-7, footnote1-9
 
 **Formatting Features**:
-- **All Content**: Using "等线" font
+- **All Content**: Using "DengXian" font
 - **Header Row**: Bold display
 - **Columns H-J**: Yellow background
 - **Special Character Marking**: Non-latin1 characters and `''s` pattern characters in red font + green background

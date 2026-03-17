@@ -136,8 +136,8 @@ def mosaic_convert(csv_file_path, output_file_path=None):
     df['value'] = df['value'].astype(str).replace("j=L '' ", "", regex=False)
     
     # Step 6: Create Index dataframe by pivoting the data using seq
-    # 1. 使用 seq 将每张图表的多行记录转为一行
-    # 2. seq 起始值为 1，每当 param=outfile 时 seq+1
+    # 1. Use seq to convert multiple records per chart into a single row
+    # 2. seq starts at 1 and increments by 1 each time param=outfile
     seq_values = []
     seq = 0
     for param_val in df[param_col].astype(str).fillna(''):
@@ -341,8 +341,8 @@ def mosaic_convert(csv_file_path, output_file_path=None):
         current_pos = 0
         
         # Define fonts
-        default_inline = InlineFont(rFont='等线')
-        red_inline = InlineFont(rFont='等线', color='FF0000')
+        default_inline = InlineFont(rFont='DengXian')
+        red_inline = InlineFont(rFont='DengXian', color='FF0000')
         
         for pos in highlight_positions:
             # Add text before the highlighted char
@@ -366,7 +366,7 @@ def mosaic_convert(csv_file_path, output_file_path=None):
     dup_rows = set(index_final.index[dup_mask])
 
     if dup_rows:
-        print("ERROR: 有图表使用同样的program+suffix,请更新MOSAIC")
+        print("ERROR: Some charts share the same program+suffix, please update MOSAIC")
     
     # Find column indices for tocnumber, PROGRAM, SUFFIX
     col_indices = {}
@@ -411,8 +411,8 @@ def mosaic_convert(csv_file_path, output_file_path=None):
     yellow_fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type='solid')
     green_fill = PatternFill(start_color='92D050', end_color='92D050', fill_type='solid')  # Light green
     blue_fill = PatternFill(start_color='00B0F0', end_color='00B0F0', fill_type='solid')
-    default_font = Font(name='等线')
-    bold_font = Font(name='等线', bold=True)
+    default_font = Font(name='DengXian')
+    bold_font = Font(name='DengXian', bold=True)
     
     # Format all cells
     for row_idx, row in enumerate(ws.iter_rows(min_row=1, max_row=ws.max_row), start=1):
@@ -458,7 +458,7 @@ def mosaic_convert(csv_file_path, output_file_path=None):
                     cell.fill = yellow_fill
                     cell.font = default_font
                 else:
-                    # Default: 等线 font
+                    # Default: DengXian font
                     cell.font = default_font
 
                 if needs_quote_highlight:
@@ -489,8 +489,8 @@ def select_input_file():
     root.attributes('-topmost', True)  # Bring dialog to front
     
     file_path = filedialog.askopenfilename(
-        title="选择输入CSV文件",
-        filetypes=[("CSV文件", "*.csv"), ("所有文件", "*.*")],
+        title="Select input CSV file",
+        filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
         initialdir=os.getcwd()
     )
     
@@ -516,9 +516,9 @@ def select_output_file(default_name="output_MOSAIC_CONVERT.xlsx"):
     root.attributes('-topmost', True)  # Bring dialog to front
     
     file_path = filedialog.asksaveasfilename(
-        title="选择输出XLSX文件",
+        title="Select output XLSX file",
         defaultextension=".xlsx",
-        filetypes=[("Excel文件", "*.xlsx"), ("所有文件", "*.*")],
+        filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")],
         initialfile=default_name,
         initialdir=os.getcwd()
     )
@@ -529,27 +529,27 @@ def select_output_file(default_name="output_MOSAIC_CONVERT.xlsx"):
 
 if __name__ == "__main__":
     print("=" * 80)
-    print("MOSAIC_CONVERT - CSV转Excel工具")
+    print("MOSAIC_CONVERT - CSV to Excel converter")
     print("=" * 80)
     print()
     
     # Step 1: Select input file
-    print("[1] 请选择输入CSV文件...")
+    print("[1] Please select input CSV file...")
     input_file = select_input_file()
     
     if not input_file:
-        print("\nERROR: 未选择输入文件，程序退出。")
+        print("\nERROR: No input file selected, exiting.")
         exit(0)
     
-    print(f"OK: 选择的输入文件: {input_file}")
+    print(f"OK: Selected input file: {input_file}")
     
     # Check if file exists
     if not os.path.exists(input_file):
-        print(f"\nERROR: 文件不存在 {input_file}")
+        print(f"\nERROR: File not found: {input_file}")
         exit(1)
     
     # Step 2: Select output file
-    print("\n[2] 请选择输出XLSX文件...")
+    print("\n[2] Please select output XLSX file...")
     
     # Suggest default output name based on input file
     input_base = os.path.splitext(os.path.basename(input_file))[0]
@@ -559,33 +559,33 @@ if __name__ == "__main__":
     output_file = select_output_file(default_output)
     
     if not output_file:
-        print("\nERROR: 未选择输出文件，程序退出。")
+        print("\nERROR: No output file selected, exiting.")
         exit(0)
     
-    print(f"OK: 选择的输出文件: {output_file}")
+    print(f"OK: Selected output file: {output_file}")
     
     # Step 3: Run the conversion
-    print("\n[3] 开始转换...")
+    print("\n[3] Starting conversion...")
     print("=" * 80)
     
     try:
         result_file = mosaic_convert(input_file, output_file)
         print("\n" + "=" * 80)
-        print("OK: 转换成功！")
+        print("OK: Conversion successful!")
         print("=" * 80)
-        print(f"输出文件: {result_file}")
-        print("\n提示：可以直接打开Excel文件查看结果")
+        print(f"Output file: {result_file}")
+        print("\nTip: You can open the Excel file directly to view the results")
         
-        # 保存输出路径到临时文件，供验证脚本使用（使用UTF-8编码以正确处理中文路径）
+        # Save output path to temp file for use by validation script (UTF-8 encoding for path support)
         with open(".last_output.txt", "w", encoding="utf-8") as f:
             f.write(result_file)
         
     except Exception as e:
         print("\n" + "=" * 80)
-        print("ERROR: 转换失败！")
+        print("ERROR: Conversion failed!")
         print("=" * 80)
-        print(f"错误信息: {e}")
-        print("\n详细错误:")
+        print(f"Error details: {e}")
+        print("\nFull traceback:")
         import traceback
         traceback.print_exc()
         exit(1)

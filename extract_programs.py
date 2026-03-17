@@ -102,7 +102,7 @@ def generate_sas_script(program_stats):
     Returns:
     --------
     script_lines : list
-        脚本行列表
+        List of script lines
     """
     script_lines = []
     

@@ -71,91 +71,93 @@ Exact matching (Dataset→Output Name)
 Statistical reporting (total count/Pass/Fail/empty)
     ↓
 Output File (people_management_with_status.xlsx)
-```352 | ✅ 完成 | TLF模板填充脚本 |
-| fill_tlf_status.py | 334 | ✅ 完成 | TLF状态填充脚本 |
-| test_fill_tlf_template.py | 204 | ✅ 完成 | 测试脚本 |
-| verify_workflow.py | 180+ | ✅ 新增 | 工作流验证脚本 |
-| run_fill_tlf_template.bat | 31 | ✅ 完成 | Windows启动脚本（模板） |
-| run_fill_tlf_status.bat | 31 | ✅ 完成 | Windows启动脚本（状态）
-### 代码文件
-| 文件名 | 行数 | 状态 | 说明 |
-|---|---|---|---|
-| mosaic_convert.py | 515 | ✅ 完成 | MOSAIC数据转换脚本 |
-| fill_tlf_template.py | 230+ | ✅ 更新 | TLF模板填充脚本 |
-| test_fill_tlf_template.py | 204 | ✅ 完成 | 测试脚本 |
-| verify_workflow.py | 180+ | ✅ 新增 | 工作流验证脚本 |
-| run_fill_tlf_template.bat | 10 | ✅ 完成 | Windows启动脚本 |
-| check_files.py | 70 | ✅ 辅助 | 文件结构检查 |
-| create_people_mgmt.py | 40 | ✅ 辅助 | 人员数据生成 |
+```
 
-### 数据文件
-| 文件名 | 行数 | 大小 | 说明 |
-|---|---|---|---|
-| Clinical Study Report_TiFo.csv | - | 输入 | 原始TiFo数据 |
-| Clinical Study Report_TiFo_MOSAIC_CONVERT_v3.xlsx | 249 | 448KB | MOSAIC输出（seq转置，v3.0） |
-| Clinical Study Report_TiFo_MOSAIC_CONVERT_updated.xlsx | 245 | 436KB | MOSAIC输出（副本） |
-| Oncology Internal Validation Template and Guidance.xlsx | 1302 | 354KB | TLF模板 |
-| Oncology Internal Validation Template and Guidance_TEST.xlsx | 1302 | 354KB | 测试输出 |
-| people_management_sample.xlsx | 95 | 20KB | 人员数据示例 |
+## Code Files
 
-### 文档文件
-| 文件名 | 说明 |
+| Filename | Lines | Status | Description |
+|---|---|---|---|
+| mosaic_convert.py | 515 | ✅ Done | MOSAIC data conversion script |
+| fill_tlf_template.py | 352 | ✅ Done | TLF template fill script |
+| fill_tlf_status.py | 334 | ✅ Done | TLF status fill script |
+| test_fill_tlf_template.py | 204 | ✅ Done | Test script |
+| verify_workflow.py | 180+ | ✅ New | Workflow verification script |
+| run_fill_tlf_template.bat | 31 | ✅ Done | Windows launcher (template) |
+| run_fill_tlf_status.bat | 31 | ✅ Done | Windows launcher (status) |
+| run_fill_tlf_template.bat | 10 | ✅ Done | Windows launcher |
+| check_files.py | 70 | ✅ Helper | File structure check |
+| create_people_mgmt.py | 40 | ✅ Helper | People data generator |
+
+## Data Files
+
+| Filename | Rows | Size | Description |
+|---|---|---|---|
+| Clinical Study Report_TiFo.csv | - | Input | Raw TiFo data |
+| Clinical Study Report_TiFo_MOSAIC_CONVERT_v3.xlsx | 249 | 448KB | MOSAIC output (seq transpose, v3.0) |
+| Clinical Study Report_TiFo_MOSAIC_CONVERT_updated.xlsx | 245 | 436KB | MOSAIC output (copy) |
+| Oncology Internal Validation Template and Guidance.xlsx | 1302 | 354KB | TLF template |
+| Oncology Internal Validation Template and Guidance_TEST.xlsx | 1302 | 354KB | Test output |
+| people_management_sample.xlsx | 95 | 20KB | People data sample |
+
+## Documentation Files
+
+| Filename | Description |
 |---|---|
-| README.md | 用户指南和技术文档 |
-| 本报告 | 项目总结和成果展示 |
+| README.md | User guide and technical documentation |
+| PROJECT_SUMMARY.md | Project summary and deliverables |
 
-## 关键功能特性
+## Key Feature Details
 
-### 1. MOSAIC_CONVERT功能
-- **CSV预处理**
+### 1. MOSAIC_CONVERT Features
+- **CSV Preprocessing**
   ```
-  脚注中的 ''s 规范化 → 's
-  脚注中的单引号 → 双引号（仅首/末）
-  标题和其他字段保持不变
+  Normalize ''s in footnotes → 's
+  Single quotes in footnotes → double quotes (first/last only)
+  Titles and other fields unchanged
   ```
-- **title7 规则**
+- **title7 Rule**
   ```
-  当 title7 非空时：j=C ' → j=L '
-  保留原始值不做其他转换
+  When title7 is not empty: j=C ' → j=L '
+  Original value preserved otherwise
   ```
-  
-- **数据分组与去重**
-  - 按sect_num, sect_ttl, program, suffix分组
-  - 提取参数/值对到单独列
-  - 表格数据：245行，211个唯一tocnumber
 
-- **Excel格式化**
-  - 字体：等线 (SimHei)
-  - 非Latin1字符和 ''s 模式：红色+绿色背景
-  - 脚注空洞（最后非空前的空值）：绿色背景
-  - 不以"结尾的非空脚注：蓝色背景（质量警告）
-  - 共享程序+后缀：黄色背景（31个组合）
+- **Data Grouping and Deduplication**
+  - Group by sect_num, sect_ttl, program, suffix
+  - Extract param/value pairs into separate columns
+  - Table data: 245 rows, 211 unique tocnumbers
 
-- **动态排序**
+- **Excel Formatting**
+  - Font: DengXian (SimHei)
+  - Non-Latin1 characters and ''s patterns: red + green background
+  - Footnote gaps (empty values before last non-empty): green background
+  - Non-empty footnotes not ending with ": blue background (quality warning)
+  - Shared program+suffix: yellow background (31 combinations)
+
+- **Dynamic Sorting**
   ```
   14.1.1 < 14.1.2.1 < 14.1.2.2 < 14.1.3 < ... < 16.2.10
-  (数字排序而非字母排序)
+  (numeric sorting, not alphabetical)
   ```
 
-### 2. FILL_TLF_TEMPLATE功能
-- **输出命名**
+### 2. FILL_TLF_TEMPLATE Features
+- **Output Naming**
   ```
-  MOSAIC输出文件：Clinical Study Report_TiFo_MOSAIC_CONVERT_YYYYMMDD.xlsx
-  (自动添加执行日期后缀)
+  MOSAIC output file: Clinical Study Report_TiFo_MOSAIC_CONVERT_YYYYMMDD.xlsx
+  (date suffix added automatically at runtime)
   ```
-- **优化后的工作流**
-  - Step1: 文件选择（MOSAIC输出，自动检测日期后缀）
-  - Step2: 文件选择（people_management文件，无需选择模板）
-  - Step3-4: 读取MOSAIC和people_management数据
-  - Step5-6: 数据列映射和三级联动匹配
-  - Step7: 基于people_management结构生成输出文件
-  - Step8: 用户选择输出文件保存位置
+- **Optimized Workflow**
+  - Step 1: File selection (MOSAIC output, auto-detect date suffix)
+  - Step 2: File selection (people_management file, no template selection needed)
+  - Steps 3-4: Read MOSAIC and people_management data
+  - Steps 5-6: Column mapping and three-tier cascading match
+  - Step 7: Generate output file based on people_management structure
+  - Step 8: User selects output save location
 
-- **智能列映射**
+- **Smart Column Mapping**
   ```
   MOSAIC → People Management
   Output Type → Output Type
-  tocnumber → Output # 
+  tocnumber → Output #
   Title → Title
   sect_num → Section #
   sect_ttl → Section Title
@@ -164,97 +166,97 @@ Output File (people_management_with_status.xlsx)
   OUTFILE → Output Name
   ```
 
-- **三级联动人员匹配**
-  - **第一优先级**（Output Name）：使用Output Name精确匹配
-  - **第二优先级**（Program Name）：为未匹配行补充
-  - **第三优先级**（标记）：黄色高亮完全未匹配，绿色高亮Tier 2匹配
-  - 仅高亮Programmer、QC Program、QC Programmer三列
+- **Three-Tier Cascading Personnel Match**
+  - **Tier 1** (Output Name): Exact match by Output Name
+  - **Tier 2** (Program Name): Supplement unmatched rows
+  - **Tier 3** (Marking): Yellow highlight for fully unmatched; green for Tier 2 matches
+  - Only Programmer, QC Program, QC Programmer columns are highlighted
 
-- **结构保留**
-  - 保留people_management中的所有sheet
-  - 保留目标sheet中的所有原有列
-  - 在对应列中更新MOSAIC合并数据
-  - 不修改原输入文件
+- **Structure Preservation**
+  - All sheets in people_management retained
+  - All existing columns in target sheet retained
+  - MOSAIC merged data written to corresponding columns
+  - Input files not modified
 
-### 3. FILL_TLF_STATUS功能
+### 3. FILL_TLF_STATUS Features
 
-- **工作流程** (10步骤)
-  - Step1: 用户选择已修改的people_management文件
-  - Step2: 用户选择tfl_status文件
-  - Step3: 读取people_management的TLF sheet
-  - Step4: 读取tfl_status的Overview sheet
-  - Step5: 预处理Comparison Status（Match→Pass, Mismatch→Fail）
-  - Step6: 基于Dataset（tfl_status）和Output Name（people_management）精确匹配
-  - Step7: 更新QC Status列，未匹配行置空
-  - Step8: 计算统计信息
-  - Step9: 用户选择输出位置
-  - Step10: 显示统计报告
+- **Workflow** (10 steps)
+  - Step 1: User selects modified people_management file
+  - Step 2: User selects tfl_status file
+  - Step 3: Read TLF sheet from people_management
+  - Step 4: Read Overview sheet from tfl_status
+  - Step 5: Preprocess Comparison Status (Match→Pass, Mismatch→Fail)
+  - Step 6: Exact match based on Dataset (tfl_status) and Output Name (people_management)
+  - Step 7: Update QC Status column; set unmatched rows to blank
+  - Step 8: Calculate statistics
+  - Step 9: User selects output location
+  - Step 10: Display statistics report
 
-- **状态转换规则**
+- **Status Conversion Rules**
   ```
   tfl_status → people_management
   Match → Pass
   Mismatch → Fail
-  (未匹配) → (空值)
+  (no match) → (blank)
   ```
 
-- **匹配逻辑**
-  - 精确匹配：Dataset = Output Name
-  - 仅在完全相同时填充QC Status
-  - 未匹配时QC Status置空
+- **Matching Logic**
+  - Exact match: Dataset = Output Name
+  - QC Status filled only when match is exact
+  - QC Status set to blank when no match
 
-- **统计报告**
-  - TLF总数目
-  - Status为"Pass"的数目
-  - Status为"Fail"的数目
-  - Status为空的数目
-  - 匹配率百分比
+- **Statistics Report**
+  - Total TLF count
+  - Count with Status = "Pass"
+  - Count with Status = "Fail"
+  - Count with blank Status
+  - Match rate percentage
 
-## 验证结果
+## Validation Results
 
-### ✅ 通过的测试
-- [x] 文件存在性检查（3/3文件：MOSAIC、people_management、无需选择模板）
-- [x] MOSAIC数据结构（249行有效数据）
-- [x] 人员数据完整性（95个程序）
-- [x] 结构保留验证（所有sheet和列保留）
-- [x] 三级匹配验证（Output Name → Program Name → 标记）
-- [x] 高亮标记验证（黄色未匹配、绿色Tier 2）
-- [x] 人员合并测试（249/249行处理完成）
+### ✅ Tests Passed
+- [x] File existence check (3/3 files: MOSAIC, people_management, no template selection needed)
+- [x] MOSAIC data structure (249 rows of valid data)
+- [x] Personnel data completeness (95 programs)
+- [x] Structure preservation verification (all sheets and columns retained)
+- [x] Three-tier match verification (Output Name → Program Name → Marking)
+- [x] Highlight marking verification (yellow for unmatched, green for Tier 2)
+- [x] Personnel merge test (249/249 rows processed)
 
-### 性能指标
-- 读取MOSAIC（249行）：< 1秒
-- 读取people_management：< 2秒
-- 读取人员数据：< 1秒
-- 数据处理和合并：< 2秒
-- 模板写入：< 1秒
-- **总执行时间：约7-10秒**
+### Performance Metrics
+- Read MOSAIC (249 rows): < 1 second
+- Read people_management: < 2 seconds
+- Read personnel data: < 1 second
+- Data processing and merge: < 2 seconds
+- Template write: < 1 second
+- **Total execution time: ~7-10 seconds**
 
-## 使用说明
+## Usage Instructions
 
-### 快速开始
+### Quick Start
 
-1. **运行模板填充脚本**
+1. **Run the template fill script**
    ```bash
    run_fill_tlf_template.bat
    ```
-   或
+   or
    ```bash
    .venv\Scripts\python.exe fill_tlf_template.py
    ```
 
-2. **按照提示选择文件**
-   - 选择MOSAIC_CONVERT_updated.xlsx
-   - 选择Oncology Internal Validation Template and Guidance.xlsx
-   - 选择people_management_sample.xlsx
+2. **Select files as prompted**
+   - Select MOSAIC_CONVERT_updated.xlsx
+   - Select Oncology Internal Validation Template and Guidance.xlsx
+   - Select people_management_sample.xlsx
 
-3. **查看结果**
-   - 模板自动更新
-   - 245行数据已填充
-   - 所有程序员和QC信息已合并
+3. **Review the results**
+   - Template auto-updated
+   - 245 rows of data filled
+   - All programmer and QC information merged
 
-### 批量处理（高级）
+### Batch Processing (Advanced)
 
-编辑脚本以支持批量处理多个MOSAIC输出文件：
+Edit the script to support batch processing of multiple MOSAIC output files:
 ```python
 mosaic_files = [
     "file1.xlsx",
@@ -265,109 +267,108 @@ for mosaic_file in mosaic_files:
     fill_tlf_template(mosaic_file, template_file, people_file)
 ```
 
-## 技术栈
+## Technology Stack
 
-| 技术 | 版本 | 用途 |
+| Technology | Version | Purpose |
 |---|---|---|
-| Python | 3.13.1 | 脚本语言 |
-| pandas | 1.0+ | 数据处理 |
-| openpyxl | 3.0+ | Excel操作 |
-| tkinter | 内置 | GUI文件对话框 |
+| Python | 3.13.1 | Scripting language |
+| pandas | 1.0+ | Data processing |
+| openpyxl | 3.0+ | Excel operations |
+| tkinter | Built-in | GUI file dialogs |
 
-## 已知限制
+## Known Limitations
 
-1. **文件锁定**
-   - Excel打开时无法写入，需要关闭文件
+1. **File Locking**
+   - Cannot write while file is open in Excel; close Excel first
 
-2. **列名匹配**
-   - 依赖精确的列名匹配（包括空格）
-   - 模板列名更改需要更新映射字典
+2. **Column Name Matching**
+   - Relies on exact column name matching (including spaces)
+   - Template column name changes require updating the mapping dictionary
 
-3. **人员数据格式**
-   - 必须包含Program Name, Programmer, QC Program, QC Programmer列
-   - 缺失列将跳过合并
+3. **Personnel Data Format**
+   - Must contain Program Name, Programmer, QC Program, QC Programmer columns
+   - Missing columns will be skipped during merge
 
-4. **数据大小**
-   - 当前设计用于<1000行数据
-   - 超大文件可能使用更多内存
+4. **Data Size**
+   - Designed for < 1000 rows of data
+   - Very large files may use more memory
 
-## 改进建议
+## Improvement Suggestions
 
-### 短期（立即可实施）
-- [ ] 添加详细的日志记录
-- [ ] 增强错误消息提示
-- [ ] 支持Excel格式化复制（从MOSAIC到模板）
-- [ ] 添加数据验证规则
+### Short-term (Immediately actionable)
+- [ ] Add detailed logging
+- [ ] Enhance error messages
+- [ ] Support Excel formatting copy (from MOSAIC to template)
+- [ ] Add data validation rules
 
-### 中期（1-2个月）
-- [ ] 实现批量处理模式
-- [ ] 创建GUI应用（使用PyQt）
-- [ ] 添加定时任务支持
-- [ ] 集成数据库后端
+### Medium-term (1-2 months)
+- [ ] Implement batch processing mode
+- [ ] Create GUI application (using PyQt)
+- [ ] Add scheduled task support
+- [ ] Integrate database backend
 
-### 长期（3-6个月）
-- [ ] Web应用部署
-- [ ] 自动化报告生成
-- [ ] 与LIMS系统集成
-- [ ] 完整的项目管理界面
+### Long-term (3-6 months)
+- [ ] Web application deployment
+- [ ] Automated report generation
+- [ ] Integration with LIMS system
+- [ ] Full project management interface
 
-## 常见问题解决
+## Troubleshooting
 
-| 问题 | 原因 | 解决方案 |
+| Issue | Cause | Solution |
 |---|---|---|
-| Permission denied | Excel文件被打开 | 关闭Excel，重新运行 |
-| 程序员未合并 | Program Name不匹配 | 检查people_management数据 |
-| 列映射失败 | 列名不存在 | 更新填充脚本中的列映射 |
-| 只填充部分数据 | 使用了旧MOSAIC文件 | 确保使用test8或updated版本 |
-| 状态未更新 | Dataset不匹配Output Name | 检查tfl_status的Dataset列 |
-| QC Status列未找到 | 列名不匹配 | 脚本会自动尝试创建该列 |
+| Permission denied | Excel file is open | Close Excel and re-run |
+| Programmer not merged | Program Name mismatch | Check people_management data |
+| Column mapping failed | Column does not exist | Update column mapping in fill script |
+| Only partial data filled | Old MOSAIC file used | Ensure test8 or updated version is used |
+| Status not updated | Dataset does not match Output Name | Check Dataset column in tfl_status |
+| QC Status column not found | Column name mismatch | Script will automatically attempt to create the column |
 
-## 项目成员贡献
+## Project Contribution
 
-**开发周期：** 3天  
-**代码行数：** 2000+ 行  
-**脚本数量：** 9个  
-**测试用例：** 3个完整测试场景  
-**文档页数：** 25+ 页  
+**Development Duration:** 3 days  
+**Lines of Code:** 2000+  
+**Number of Scripts:** 9  
+**Test Cases:** 3 complete test scenarios  
+**Documentation Pages:** 25+  
 
-## 交付物检查清单
+## Deliverables Checklist
 
-- [x] 完整的Python脚本（mosaic_convert + fill_tlf_template + fill_tlf_status）
-- [x] 测试脚本和验证工具
-- [x] 详细的用户文档（README + README_FILL_TLF_STATUS）
-- [x] 本项目总结报告
-- [x] 示例数据文件
-- [x] 批处理启动文件（run_fill_tlf_template.bat + run_fill_tlf_status.bat）
-- [x] 快速启动脚本（.bat）
-- [x] 所有验证测试通过
-- [x] 完整的注释和说明
+- [x] Complete Python scripts (mosaic_convert + fill_tlf_template + fill_tlf_status)
+- [x] Test scripts and validation tools
+- [x] Detailed user documentation (README + README_FILL_TLF_STATUS)
+- [x] This project summary report
+- [x] Sample data files
+- [x] Batch launchers (run_fill_tlf_template.bat + run_fill_tlf_status.bat)
+- [x] Quick-start scripts (.bat)
+- [x] All validation tests passed
+- [x] Complete comments and documentation
 
-## 后续维护计划
+## Maintenance Plan
 
-### 版本 1.1（计划）
-- [ ] 改进的错误处理
-- [ ] 中文和英文支持
-- [ ] 更多的数据验证选项
+### Version 1.1 (Planned)
+- [ ] Improved error handling
+- [ ] Additional data validation options
 
-### 版本 2.0（计划）
-- [ ] GUI应用
-- [ ] 数据库集成
-- [ ] Web界面
+### Version 2.0 (Planned)
+- [ ] GUI application
+- [ ] Database integration
+- [ ] Web interface
 
-## 结论
+## Conclusion
 
-项目已成功完成所有既定目标：
+The project has successfully met all stated objectives:
 
-✅ **功能完整性：** 100%  
-✅ **数据准确性：** 100%（245/245行，95/95程序）  
-✅ **系统稳定性：** 通过所有验证测试  
-✅ **文档完善性：** 详细的用户指南和技术文档  
+✅ **Functional completeness:** 100%  
+✅ **Data accuracy:** 100% (245/245 rows, 95/95 programs)  
+✅ **System stability:** All validation tests passed  
+✅ **Documentation quality:** Detailed user guide and technical documentation  
 
-系统已准备好用于生产环境。
+The system is ready for production use.
 
 ---
 
-**报告生成时间：** 2026年2月10日 11:30 UTC+8  
-**项目负责人：** Python开发团队  
-**状态：** ✅ 完成并交付
+**Report generated:** February 10, 2026 11:30 UTC+8  
+**Project owner:** Python Development Team  
+**Status:** ✅ Completed and delivered
 

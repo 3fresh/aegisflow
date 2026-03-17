@@ -38,7 +38,7 @@ All Python files fully translated from Chinese to English:
 3. **mosaic_convert.py** (511 lines)
    - ✅ All critical messages translated
    - ✅ All error handling translated
-   - ✅ Font names updated (等线 → DengXian)
+   - ✅ Font names updated (DengXian: rFont='DengXian')
    - Status: Production Ready
 
 4. **generate_batch_xml.py** (642 lines)
@@ -157,9 +157,9 @@ All BAT files verified as already in English:
 Lines translated: 375
 Sections: Docstring, Comments, Print statements, Error messages
 Key translations:
-  - "读取tfl_status文件失败" → "Failed to read tfl_status file"
-  - "合并QC状态到People Management" → "Merge QC Status to People Management"
-  - "文件已保存" → "File saved"
+  - "du qu tfl_status wen jian shi bai" → "Failed to read tfl_status file"
+  - "he bing QC zhuang tai dao People Management" → "Merge QC Status to People Management"
+  - "wen jian yi bao cun" → "File saved"
 ```
 
 #### extract_programs.py
@@ -167,9 +167,9 @@ Key translations:
 Lines translated: 262
 Sections: Function descriptions, Print statements, User prompts
 Key translations:
-  - "提取SAS程序列表" → "Extract SAS Program List"
-  - "正在处理数据" → "Processing data"
-  - "生成脚本完成" → "Script generation complete"
+  - "ti qu SAS cheng xu lie biao" → "Extract SAS Program List"
+  - "zheng zai chu li shu ju" → "Processing data"
+  - "sheng cheng jiao ben wan cheng" → "Script generation complete"
 ```
 
 #### mosaic_convert.py
@@ -177,9 +177,9 @@ Key translations:
 Lines translated: 511
 Sections: Critical messages, Error handling
 Key translations:
-  - "正在预处理数据" → "Preprocessing data"
-  - "有图表使用同样的toc number" → "Some tables/listings/figures use the same toc number"
-  - Font: "等线" → "DengXian"
+  - "zheng zai yu chu li shu ju" → "Preprocessing data"
+  - "you tu biao shi yong tong yang de toc number" → "Some tables/listings/figures use the same toc number"
+  - Font: updated to "DengXian" (rFont attribute)
 ```
 
 #### generate_batch_xml.py
@@ -188,8 +188,8 @@ Lines translated: 642
 Sections: Interactive prompts, Validation messages, XML generation
 Key translations:
   - 6-step interactive menu all translated
-  - "请选择输入文件" → "Please select input file"
-  - "检查字符编码兼容性" → "Check character encoding compatibility"
+  - "qing xuan ze shu ru wen jian" → "Please select input file"
+  - "jian cha zi fu bian ma jian rong xing" → "Check character encoding compatibility"
 ```
 
 #### fill_tlf_template.py
@@ -197,9 +197,9 @@ Key translations:
 Lines translated: 353
 Sections: Workflow descriptions, Three-tier matching logic
 Key translations:
-  - "三级联动匹配" → "Three-tier cascading match"
-  - "Output Name匹配" → "Output Name matched"
-  - "Program Name补充匹配" → "Program Name supplement match"
+  - "san ji lian dong pi pei" → "Three-tier cascading match"
+  - "Output Name pi pei" → "Output Name matched"
+  - "Program Name bu chong pi pei" → "Program Name supplement match"
 ```
 
 #### validate_output.py
@@ -207,9 +207,9 @@ Key translations:
 Lines translated: 150
 Sections: Validation messages, Status reporting
 Key translations:
-  - "验证文件" → "Validating file"
-  - "数据质量检查" → "Data quality check"
-  - "验证通过" → "Validation passed"
+  - "yan zheng wen jian" → "Validating file"
+  - "shu ju zhi liang jian cha" → "Data quality check"
+  - "yan zheng tong guo" → "Validation passed"
 ```
 
 ---

@@ -208,7 +208,7 @@ class XMLGenerator:
         # Create XML structure - maintain exact consistency with reference XML
         root = ET.Element('pdf-builder-metadata')
         
-        # 添加注释（需要在prettify时处理）
+        # Add comment (handled during prettify)
         comment_text = '<!-- input files total to less than 100MB -->'
         
         # Add ruleset
@@ -236,7 +236,7 @@ class XMLGenerator:
         font.set('style', 'normal')
         font.set('size', '9')
         
-        # 添加注释（需要在prettify时处理）
+        # Add comment (handled during prettify)
         # <!-- <character-encoding type="ascii" /> -->
         
         # Add document-heading (fixed content, but text uses user-defined header_text)
@@ -307,7 +307,7 @@ class XMLGenerator:
         # Clean data
         df_clean = self.df.copy()
         
-        # 填充空值
+        # Fill empty values
         for col in df_clean.columns:
             if col in ['sect_num', 'sect_ttl', 'OUTFILE', 'Title']:
                 df_clean[col] = df_clean[col].fillna('')
@@ -421,7 +421,6 @@ class XMLGenerator:
 def interactive_mode():
     """Interactive mode"""
     print("=" * 70)
-    print("  根据Excel生成Batch List XML工具")
     print("  Generate Batch List XML from Excel")
     print("=" * 70)
     print()
