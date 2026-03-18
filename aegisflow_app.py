@@ -635,13 +635,67 @@ class WorkflowPanel(ctk.CTkFrame):
                      ).pack(anchor="w", pady=(0, 14))
 
         card = ctk.CTkFrame(self, fg_color=("white", "#1e293b"), corner_radius=12)
-        card.pack(fill="x")
-        self._cv = _tk.Canvas(card, highlightthickness=0, width=720, height=582)
-        self._cv.pack(padx=16, pady=16, anchor="center")
-        self._cv.after(80, self._render)
+        card.pack(fill="x", pady=(0, 12))
+        self._cv = _tk.Canvas(card, highlightthickness=0, height=490)
+        self._cv.pack(fill="x", padx=10, pady=10)
+        self._cv.bind("<Configure>", lambda e: self._render())
+        self._cv.after(100, self._render)
+
+        # ── Summary table ─────────────────────────────────────────────────
+        self._build_table()
+
+    def _build_table(self):
+        tcard = ctk.CTkFrame(self, fg_color=("white", "#1e293b"), corner_radius=12)
+        tcard.pack(fill="x", pady=(0, 4))
+
+        hdr = ctk.CTkFrame(tcard, fg_color=("#e2e8f0", "#0f172a"), corner_radius=8)
+        hdr.pack(fill="x", padx=14, pady=(14, 0))
+        hdr.columnconfigure((1, 2, 3), weight=1)
+        for c, htext in enumerate(["Step", "Tool", "Purpose", "Depends On"]):
+            ctk.CTkLabel(hdr, text=htext, font=(FONT_FAMILY, 11, "bold"),
+                         text_color=("#374151", "#cbd5e1"), anchor="w"
+                         ).grid(row=0, column=c, sticky="w", padx=12, pady=7)
+
+        ROWS = [
+            ("①", "#2563eb", "MOSAIC Convert",
+             "Convert TiFo CSV → formatted Excel (Index + Original sheets)",
+             "TiFo / MOSAIC CSV export"),
+            ("②", "#16a34a", "Fill TLF Template",
+             "Assign Programmer / QC Programmer per TLF entry",
+             "① + People Mgmt template"),
+            ("③", "#d97706", "Fill TLF Status",
+             "Fill QC Pass / Fail status from TFL Status file",
+             "② + TFL Status file"),
+            ("④", "#9333ea", "Extract Programs",
+             "Generate SAS %runpgm batch script (de-duplicated, TOC order)",
+             "① — runs in parallel with ②③"),
+            ("⑤", "#e11d48", "Generate Batch XML",
+             "Generate Adobe PDF Builder batch list XML with page numbers",
+             "① or any Excel / CSV with output filenames"),
+        ]
+
+        for r, (step, color, tool, purpose, dep) in enumerate(ROWS):
+            bg = ("white", "#1e293b") if r % 2 == 0 else ("#f1f5f9", "#162032")
+            row_f = ctk.CTkFrame(tcard, fg_color=bg, corner_radius=0)
+            row_f.pack(fill="x", padx=14, pady=0)
+            row_f.columnconfigure(2, weight=1)
+            ctk.CTkLabel(row_f, text=step, font=(FONT_FAMILY, 13, "bold"),
+                         text_color=(color, color), width=52, anchor="w"
+                         ).grid(row=0, column=0, sticky="w", padx=10, pady=7)
+            ctk.CTkLabel(row_f, text=tool, font=(FONT_FAMILY, 11, "bold"),
+                         text_color=("#1e3a5f", "#93c5fd"), width=168, anchor="w"
+                         ).grid(row=0, column=1, sticky="w", padx=(0, 8), pady=7)
+            ctk.CTkLabel(row_f, text=purpose, font=(FONT_FAMILY, 11),
+                         text_color=("#374151", "#d1d5db"), anchor="w", wraplength=320
+                         ).grid(row=0, column=2, sticky="w", padx=(0, 8), pady=7)
+            ctk.CTkLabel(row_f, text=dep, font=(FONT_FAMILY, 11),
+                         text_color=("#6b7280", "#9ca3af"), anchor="w", wraplength=230
+                         ).grid(row=0, column=3, sticky="w", padx=(0, 10), pady=7)
+
+        ctk.CTkFrame(tcard, height=10, fg_color="transparent").pack()
 
     def on_show(self):
-        """Refresh colours whenever this panel is activated (or theme changes)."""
+        """Refresh when panel is activated or theme changes."""
         self._render()
 
     # ── Colour palette ─────────────────────────────────────────────────────────────────
@@ -679,79 +733,111 @@ class WorkflowPanel(ctk.CTkFrame):
     def _render(self):
         cv = self._cv
         cv.delete("all")
-        p = self._pal()
+        p  = self._pal()
         cv.configure(bg=p["bg"])
 
-        def box(cx, cy, w, h, key, *lines):
+        W = cv.winfo_width()
+        if W < 60:
+            return   # not yet laid out; Configure event will fire again
+
+        # All x-coords are defined for a 720 px reference and scaled to actual W.
+        # Y-coords are fixed (canvas height = 490 px).
+        def x(ref): return int(ref * W / 720)
+
+        C1, C2, C3 = 120, 360, 600     # column centres (ref 720 px)
+        Y_SRC  = 52                     # sources row
+        Y_T12  = 160                    # tool row 1  (T1, T2)
+        Y_T345 = 305                    # tool row 2  (T3, T4, T5)
+        Y_OUT  = 430                    # deliverable outputs
+        Y_LEG  = 472                    # legend
+
+        TW = x(86);  TH = 32           # tool node  half-width (scaled), half-height
+        SW = x(76);  SH = 22           # src/output half-width (scaled), half-height
+
+        def rr(cx, cy, hw, hh, key, l1, l2=""):
+            """Rounded-rect node centred at (cx, cy)."""
             fill, outline, tc = p[key]
-            x0, y0, x1, y1 = cx - w // 2, cy - h // 2, cx + w // 2, cy + h // 2
-            r = 9
-            pts = [x0 + r, y0,   x1 - r, y0,
-                   x1,     y0 + r, x1,   y1 - r,
-                   x1 - r, y1,   x0 + r, y1,
-                   x0,     y1 - r, x0,   y0 + r]
+            x0, y0, x1b, y1b = cx - hw, cy - hh, cx + hw, cy + hh
+            r = 8
+            pts = [x0+r, y0,   x1b-r, y0,   x1b, y0+r,  x1b, y1b-r,
+                   x1b-r, y1b, x0+r,  y1b,  x0,  y1b-r, x0,  y0+r]
             cv.create_polygon(pts, fill=fill, outline=outline, width=2, smooth=True)
-            texts  = [t for t in lines if t]
-            offs   = {1: [0], 2: [-9, 9]}.get(len(texts), [-9, 9])
-            weight = "bold" if key not in ("src", "out") else "normal"
-            for i, t in enumerate(texts):
-                cv.create_text(cx, cy + offs[i], text=t,
-                               fill=tc, font=(FONT_FAMILY, 10, weight), anchor="center")
+            wt = "bold" if key not in ("src", "out") else "normal"
+            fs = max(8, min(11, W // 72))
+            if l2:
+                cv.create_text(cx, cy - 10, text=l1, fill=tc,
+                               font=(FONT_FAMILY, fs, wt), anchor="center")
+                cv.create_text(cx, cy + 10, text=l2, fill=tc,
+                               font=(FONT_FAMILY, fs), anchor="center")
+            else:
+                cv.create_text(cx, cy, text=l1, fill=tc,
+                               font=(FONT_FAMILY, fs, wt), anchor="center")
 
         def arr(*pts):
             cv.create_line(*pts, fill=p["arr"], width=2,
                            arrow="last", arrowshape=(9, 11, 3), joinstyle="round")
 
-        # ── Nodes ──────────────────────────────────────────────────────────────
-        # Sources  (row y = 55)
-        box(105, 55,  148, 40, "src",   "TiFo / MOSAIC",      "CSV Export")
-        box(360, 55,  158, 40, "src",   "People Mgmt",        "Template .xlsx")
-        box(605, 55,  148, 40, "src",   "TFL Status",         "File .xlsx")
+        def lbl(tx, ty, text):
+            cv.create_text(tx, ty, text=text, fill=p["lbl"],
+                           font=(FONT_FAMILY, 8, "italic"), anchor="w")
 
-        # Tools
-        box(105, 175, 168, 60, "blue",  "① MOSAIC Convert",   "")
-        box(360, 175, 178, 60, "green", "② Fill TLF",         "Template")
-        box(105, 310, 168, 60, "purp",  "④ Extract",          "Programs")
-        box(555, 310, 178, 60, "amber", "③ Fill TLF",         "Status")
-        box(360, 435, 178, 60, "rose",  "⑤ Generate",         "Batch XML")
+        # ── Sources ───────────────────────────────────────────────────────
+        rr(x(C1), Y_SRC, SW, SH, "src",   "TiFo / MOSAIC",    "CSV Export")
+        rr(x(C2), Y_SRC, SW, SH, "src",   "People Mgmt",      "Template .xlsx")
+        rr(x(C3), Y_SRC, SW, SH, "src",   "TFL Status",       "File .xlsx")
 
-        # Deliverable outputs
-        box(105, 435, 162, 50, "out",   "📝 SAS Script",      ".txt")
-        box(605, 435, 162, 50, "out",   "📄 Final People",    "Mgmt .xlsx")
-        box(360, 535, 178, 50, "out",   "🖶  batch_list.xml", "→ Adobe PDF Builder")
+        # ── Tool row 1 ────────────────────────────────────────────────────
+        rr(x(C1), Y_T12,  TW, TH, "blue",  "① MOSAIC Convert", "")
+        rr(x(C2), Y_T12,  TW, TH, "green", "② Fill TLF",       "Template")
 
-        # ── Arrows ────────────────────────────────────────────────────────────
-        arr(105,  75, 105, 145)             # SRC_CSV → T1
-        arr(360,  75, 360, 145)             # SRC_PPL → T2
-        arr(605,  75, 555, 280)             # SRC_TFL → T3  (diagonal)
-        arr(189, 175, 271, 175)             # T1 → T2  (horizontal)
-        arr(360, 205, 555, 280)             # T2 → T3  (diagonal)
-        arr(105, 205, 105, 280)             # T1 → T4  (vertical branch)
-        arr(105, 340, 105, 410)             # T4 → OUT_SAS
-        arr(519, 340, 399, 405)             # T3 → T5  (diagonal)
-        arr(644, 310, 706, 310,             # T3 → OUT_PPL  (right-side L-route)
-            706, 435, 686, 435)
-        arr(360, 465, 360, 510)             # T5 → OUT_PDF
+        # ── Tool row 2 ────────────────────────────────────────────────────
+        rr(x(C1), Y_T345, TW, TH, "purp",  "④ Extract",        "Programs")
+        rr(x(C2), Y_T345, TW, TH, "rose",  "⑤ Generate",       "Batch XML")
+        rr(x(C3), Y_T345, TW, TH, "amber", "③ Fill TLF",       "Status")
 
-        # ── Arrow labels ─────────────────────────────────────────────────────────
-        lc = p["lbl"]
-        lf = (FONT_FAMILY, 8, "italic")
-        cv.create_text(232, 163, text="MOSAIC.xlsx",    fill=lc, font=lf, anchor="center")
-        cv.create_text(148, 242, text="MOSAIC.xlsx",    fill=lc, font=lf, anchor="w")
-        cv.create_text(470, 226, text="Ppl Mgmt .xlsx", fill=lc, font=lf, anchor="center")
+        # ── Outputs ───────────────────────────────────────────────────────
+        rr(x(C1), Y_OUT,  SW, SH, "out",   "📝 SAS Script",    ".txt")
+        rr(x(C2), Y_OUT,  SW, SH, "out",   "🖶  batch_list",   ".xml")
+        rr(x(C3), Y_OUT,  SW, SH, "out",   "📄 Final People",  "Mgmt .xlsx")
 
-        # ── Legend ────────────────────────────────────────────────────────────────
-        ly, lx = 574, 14
+        # ── Arrows ────────────────────────────────────────────────────────
+        arr(x(C1), Y_SRC+SH,     x(C1), Y_T12-TH)          # SRC_CSV → T1
+        arr(x(C2), Y_SRC+SH,     x(C2), Y_T12-TH)          # SRC_PPL → T2
+        arr(x(C3), Y_SRC+SH,     x(C3), Y_T345-TH)         # SRC_TFL → T3
+        arr(x(C1)+TW, Y_T12,     x(C2)-TW, Y_T12)          # T1 → T2 (horizontal)
+        arr(x(C2)+TW-6, Y_T12+TH-8,                         # T2 → T3 (diagonal)
+            x(C3)-TW+6, Y_T345-TH+8)
+        arr(x(C1-18), Y_T12+TH,  x(C1-18), Y_T345-TH)      # T1 → T4 (left branch)
+
+        # T1 → T5  (L-route: slightly-right start, down then across)
+        my = (Y_T12+TH + Y_T345-TH) // 2
+        arr(x(C1+18), Y_T12+TH,
+            x(C1+18), my,
+            x(C2),    my,
+            x(C2),    Y_T345-TH)
+
+        arr(x(C1), Y_T345+TH,    x(C1), Y_OUT-SH)           # T4 → SAS
+        arr(x(C2), Y_T345+TH,    x(C2), Y_OUT-SH)           # T5 → XML
+        arr(x(C3), Y_T345+TH,    x(C3), Y_OUT-SH)           # T3 → PPL
+
+        # ── Arrow labels ──────────────────────────────────────────────────
+        lbl(x(C1+28), my - 9,           "MOSAIC.xlsx")
+        lbl(x((C2+C3)//2) + 8,
+            (Y_T12 + Y_T345) // 2,     "Ppl Mgmt .xlsx")
+
+        # ── Legend ────────────────────────────────────────────────────────
+        lx = x(14)
+        step = x(175)
         for dot_c, txt in [
             ("#94a3b8", "Data Source / Input"),
-            ("#2563eb", "Main Pipeline Tool (→)"),
-            ("#9333ea", "Side Branch Tool"),
+            ("#2563eb", "Main Pipeline  →"),
+            ("#9333ea", "Side Branch  →"),
             ("#16a34a", "Deliverable Output"),
         ]:
-            cv.create_oval(lx, ly - 5, lx + 10, ly + 5, fill=dot_c, outline="")
-            cv.create_text(lx + 14, ly, text=txt, fill=p["lbl"],
+            cv.create_oval(lx, Y_LEG-6, lx+12, Y_LEG+6, fill=dot_c, outline="")
+            cv.create_text(lx+16, Y_LEG, text=txt, fill=p["lbl"],
                            font=(FONT_FAMILY, 9), anchor="w")
-            lx += 178
+            lx += step
 
 
 # ═══════════════════════════════════════════════════════════════════════#  Main Application Window
