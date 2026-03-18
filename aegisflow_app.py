@@ -13,6 +13,7 @@ import threading
 import io
 from tkinter import filedialog
 from datetime import datetime
+import tkinter as _tk          # plain Tk canvas for WorkflowPanel
 
 # ── Fix working directory when running as PyInstaller EXE ──────────────────
 if getattr(sys, "frozen", False):
@@ -611,8 +612,149 @@ class XMLPanel(ToolPanel):
         )
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-#  Main Application Window
+# ═══════════════════════════════════════════════════════════════════════════#  Workflow Overview Panel
+# ═══════════════════════════════════════════════════════════════════════
+
+class WorkflowPanel(ctk.CTkFrame):
+    """Canvas-based pipeline diagram — no Run button needed."""
+
+    def __init__(self, parent, app, **kw):
+        super().__init__(parent, fg_color="transparent", **kw)
+        self.app = app
+        self._build()
+
+    def _build(self):
+        ctk.CTkLabel(self, text="Workflow Overview",
+                     font=(FONT_FAMILY, 20, "bold"),
+                     text_color=("#111827", "#f1f5f9")
+                     ).pack(anchor="w", pady=(0, 2))
+        ctk.CTkLabel(self,
+                     text="End-to-end pipeline — from raw MOSAIC export to final deliverables",
+                     font=(FONT_FAMILY, 12),
+                     text_color=("#6b7280", "#9ca3af")
+                     ).pack(anchor="w", pady=(0, 14))
+
+        card = ctk.CTkFrame(self, fg_color=("white", "#1e293b"), corner_radius=12)
+        card.pack(fill="x")
+        self._cv = _tk.Canvas(card, highlightthickness=0, width=720, height=582)
+        self._cv.pack(padx=16, pady=16, anchor="center")
+        self._cv.after(80, self._draw)
+
+    def on_show(self):
+        """Refresh colours whenever this panel is activated (or theme changes)."""
+        self._draw()
+
+    # ── Colour palette ─────────────────────────────────────────────────────────────────
+
+    def _pal(self):
+        dark = ctk.get_appearance_mode() == "Dark"
+        if dark:
+            return {
+                "bg":    "#1a2538",
+                "arr":   "#64748b",
+                "lbl":   "#475569",
+                "src":   ("#243447", "#4e6680", "#9cb6d0"),
+                "blue":  ("#1e3a5f", "#3b82f6", "#93c5fd"),
+                "green": ("#14532d", "#22c55e", "#86efac"),
+                "amber": ("#78350f", "#f59e0b", "#fde68a"),
+                "purp":  ("#3b0764", "#a855f7", "#d8b4fe"),
+                "rose":  ("#881337", "#f43f5e", "#fda4af"),
+                "out":   ("#052e16", "#4ade80", "#86efac"),
+            }
+        return {
+            "bg":    "#ffffff",
+            "arr":   "#64748b",
+            "lbl":   "#9ca3af",
+            "src":   ("#f1f5f9", "#94a3b8", "#475569"),
+            "blue":  ("#dbeafe", "#2563eb", "#1e3a5f"),
+            "green": ("#dcfce7", "#16a34a", "#14532d"),
+            "amber": ("#fef9c3", "#d97706", "#78350f"),
+            "purp":  ("#f3e8ff", "#9333ea", "#3b0764"),
+            "rose":  ("#ffe4e6", "#e11d48", "#881337"),
+            "out":   ("#f0fdf4", "#16a34a", "#166534"),
+        }
+
+    # ── Drawing ────────────────────────────────────────────────────────────────────
+
+    def _draw(self):
+        cv = self._cv
+        cv.delete("all")
+        p = self._pal()
+        cv.configure(bg=p["bg"])
+
+        def box(cx, cy, w, h, key, *lines):
+            fill, outline, tc = p[key]
+            x0, y0, x1, y1 = cx - w // 2, cy - h // 2, cx + w // 2, cy + h // 2
+            r = 9
+            pts = [x0 + r, y0,   x1 - r, y0,
+                   x1,     y0 + r, x1,   y1 - r,
+                   x1 - r, y1,   x0 + r, y1,
+                   x0,     y1 - r, x0,   y0 + r]
+            cv.create_polygon(pts, fill=fill, outline=outline, width=2, smooth=True)
+            texts  = [t for t in lines if t]
+            offs   = {1: [0], 2: [-9, 9]}.get(len(texts), [-9, 9])
+            weight = "bold" if key not in ("src", "out") else "normal"
+            for i, t in enumerate(texts):
+                cv.create_text(cx, cy + offs[i], text=t,
+                               fill=tc, font=(FONT_FAMILY, 10, weight), anchor="center")
+
+        def arr(*pts):
+            cv.create_line(*pts, fill=p["arr"], width=2,
+                           arrow="last", arrowshape=(9, 11, 3), joinstyle="round")
+
+        # ── Nodes ──────────────────────────────────────────────────────────────
+        # Sources  (row y = 55)
+        box(105, 55,  148, 40, "src",   "TiFo / MOSAIC",      "CSV Export")
+        box(360, 55,  158, 40, "src",   "People Mgmt",        "Template .xlsx")
+        box(605, 55,  148, 40, "src",   "TFL Status",         "File .xlsx")
+
+        # Tools
+        box(105, 175, 168, 60, "blue",  "① MOSAIC Convert",   "")
+        box(360, 175, 178, 60, "green", "② Fill TLF",         "Template")
+        box(105, 310, 168, 60, "purp",  "④ Extract",          "Programs")
+        box(555, 310, 178, 60, "amber", "③ Fill TLF",         "Status")
+        box(360, 435, 178, 60, "rose",  "⑤ Generate",         "Batch XML")
+
+        # Deliverable outputs
+        box(105, 435, 162, 50, "out",   "📝 SAS Script",      ".txt")
+        box(605, 435, 162, 50, "out",   "📄 Final People",    "Mgmt .xlsx")
+        box(360, 535, 178, 50, "out",   "🖶  batch_list.xml", "→ Adobe PDF Builder")
+
+        # ── Arrows ────────────────────────────────────────────────────────────
+        arr(105,  75, 105, 145)             # SRC_CSV → T1
+        arr(360,  75, 360, 145)             # SRC_PPL → T2
+        arr(605,  75, 555, 280)             # SRC_TFL → T3  (diagonal)
+        arr(189, 175, 271, 175)             # T1 → T2  (horizontal)
+        arr(360, 205, 555, 280)             # T2 → T3  (diagonal)
+        arr(105, 205, 105, 280)             # T1 → T4  (vertical branch)
+        arr(105, 340, 105, 410)             # T4 → OUT_SAS
+        arr(519, 340, 399, 405)             # T3 → T5  (diagonal)
+        arr(644, 310, 706, 310,             # T3 → OUT_PPL  (right-side L-route)
+            706, 435, 686, 435)
+        arr(360, 465, 360, 510)             # T5 → OUT_PDF
+
+        # ── Arrow labels ─────────────────────────────────────────────────────────
+        lc = p["lbl"]
+        lf = (FONT_FAMILY, 8, "italic")
+        cv.create_text(232, 163, text="MOSAIC.xlsx",    fill=lc, font=lf, anchor="center")
+        cv.create_text(148, 242, text="MOSAIC.xlsx",    fill=lc, font=lf, anchor="w")
+        cv.create_text(470, 226, text="Ppl Mgmt .xlsx", fill=lc, font=lf, anchor="center")
+
+        # ── Legend ────────────────────────────────────────────────────────────────
+        ly, lx = 574, 14
+        for dot_c, txt in [
+            ("#94a3b8", "Data Source / Input"),
+            ("#2563eb", "Main Pipeline Tool (→)"),
+            ("#9333ea", "Side Branch Tool"),
+            ("#16a34a", "Deliverable Output"),
+        ]:
+            cv.create_oval(lx, ly - 5, lx + 10, ly + 5, fill=dot_c, outline="")
+            cv.create_text(lx + 14, ly, text=txt, fill=p["lbl"],
+                           font=(FONT_FAMILY, 9), anchor="w")
+            lx += 178
+
+
+# ═══════════════════════════════════════════════════════════════════════#  Main Application Window
 # ═══════════════════════════════════════════════════════════════════════════
 
 class AegisFlowApp(ctk.CTk):
@@ -635,8 +777,8 @@ class AegisFlowApp(ctk.CTk):
         # Redirector
         self.redirector = StdoutRedirector(self._log_box)
 
-        # Show first tool
-        self._switch("mosaic")
+        # Show workflow overview on launch
+        self._switch("workflow")
 
     # ── Layout ─────────────────────────────────────────────────────────────
 
@@ -662,6 +804,21 @@ class AegisFlowApp(ctk.CTk):
                      text_color="#475569").pack(anchor="w", pady=(2, 0))
 
         ctk.CTkFrame(sb, height=1, fg_color="#334155").pack(fill="x", padx=18, pady=14)
+
+        # —— Overview section ——
+        ctk.CTkLabel(sb, text="O V E R V I E W", font=(FONT_FAMILY, 9, "bold"),
+                     text_color="#475569").pack(anchor="w", padx=22, pady=(0, 4))
+        ov_btn = ctk.CTkButton(
+            sb, text="  🗺️  Workflow", anchor="w",
+            height=44, font=(FONT_FAMILY, 13),
+            fg_color="transparent", text_color="#94a3b8",
+            hover_color="#1e3a5f", corner_radius=8,
+            command=lambda: self._switch("workflow"),
+        )
+        ov_btn.pack(fill="x", padx=10, pady=2)
+        self._nav_btns["workflow"] = ov_btn
+
+        ctk.CTkFrame(sb, height=1, fg_color="#334155").pack(fill="x", padx=18, pady=(10, 4))
         ctk.CTkLabel(sb, text="T O O L S", font=(FONT_FAMILY, 9, "bold"),
                      text_color="#475569").pack(anchor="w", padx=22, pady=(0, 6))
 
@@ -709,6 +866,7 @@ class AegisFlowApp(ctk.CTk):
         self._scroll = scr
 
         panel_map = {
+            "workflow": WorkflowPanel,
             "mosaic":   MosaicPanel,
             "template": TemplatePanel,
             "status":   StatusPanel,
@@ -767,6 +925,8 @@ class AegisFlowApp(ctk.CTk):
         self._panels[tool_id].grid()
         self._nav_btns[tool_id].configure(
             fg_color="#1e3a5f", text_color="#60a5fa", font=(FONT_FAMILY, 13, "bold"))
+        if hasattr(self._panels[tool_id], "on_show"):
+            self._panels[tool_id].on_show()
 
     def log_clear(self):
         self._log_box.configure(state="normal")
@@ -788,6 +948,9 @@ class AegisFlowApp(ctk.CTk):
         else:
             ctk.set_appearance_mode("Dark")
             self._mode_btn.configure(text="☀️  Light Mode")
+        # Re-draw workflow diagram if it is currently visible
+        if self._cur_id == "workflow":
+            self._panels["workflow"].on_show()
 
 
 # ═══════════════════════════════════════════════════════════════════════════
