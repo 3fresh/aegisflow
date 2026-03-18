@@ -638,11 +638,11 @@ class WorkflowPanel(ctk.CTkFrame):
         card.pack(fill="x")
         self._cv = _tk.Canvas(card, highlightthickness=0, width=720, height=582)
         self._cv.pack(padx=16, pady=16, anchor="center")
-        self._cv.after(80, self._draw)
+        self._cv.after(80, self._render)
 
     def on_show(self):
         """Refresh colours whenever this panel is activated (or theme changes)."""
-        self._draw()
+        self._render()
 
     # ── Colour palette ─────────────────────────────────────────────────────────────────
 
@@ -676,7 +676,7 @@ class WorkflowPanel(ctk.CTkFrame):
 
     # ── Drawing ────────────────────────────────────────────────────────────────────
 
-    def _draw(self):
+    def _render(self):
         cv = self._cv
         cv.delete("all")
         p = self._pal()
